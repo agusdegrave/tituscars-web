@@ -38,6 +38,24 @@ export function SearchForm({
     );
   }, [pares, marca]);
 
+  const itemsMarca = useMemo(() => {
+    const items: Record<string, string> = { [TODAS]: "Todas las marcas" };
+    for (const m of marcas) items[m] = m;
+    return items;
+  }, [marcas]);
+
+  const itemsModelo = useMemo(() => {
+    const items: Record<string, string> = { [TODOS]: "Todos los modelos" };
+    for (const m of modelos) items[m] = m;
+    return items;
+  }, [modelos]);
+
+  const itemsAnio = useMemo(() => {
+    const items: Record<string, string> = { [TODOS]: "Todos los años" };
+    for (const a of anios) items[String(a)] = String(a);
+    return items;
+  }, [anios]);
+
   function handleMarcaChange(valor: string | null) {
     setMarca(valor ?? TODAS);
     setModelo(TODOS);
@@ -61,7 +79,7 @@ export function SearchForm({
 
   return (
     <div className="grid grid-cols-1 gap-3 rounded-xl border border-border bg-card p-4 shadow-lg sm:grid-cols-4 sm:gap-2">
-      <Select value={marca} onValueChange={handleMarcaChange}>
+      <Select items={itemsMarca} value={marca} onValueChange={handleMarcaChange}>
         <SelectTrigger className="w-full sm:h-11">
           <SelectValue placeholder="Marca" />
         </SelectTrigger>
@@ -75,7 +93,7 @@ export function SearchForm({
         </SelectContent>
       </Select>
 
-      <Select value={modelo} onValueChange={handleModeloChange}>
+      <Select items={itemsModelo} value={modelo} onValueChange={handleModeloChange}>
         <SelectTrigger className="w-full sm:h-11">
           <SelectValue placeholder="Modelo" />
         </SelectTrigger>
@@ -89,7 +107,7 @@ export function SearchForm({
         </SelectContent>
       </Select>
 
-      <Select value={anio} onValueChange={handleAnioChange}>
+      <Select items={itemsAnio} value={anio} onValueChange={handleAnioChange}>
         <SelectTrigger className="w-full sm:h-11">
           <SelectValue placeholder="Año" />
         </SelectTrigger>

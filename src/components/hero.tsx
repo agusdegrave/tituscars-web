@@ -10,8 +10,11 @@ export function Hero({
   anios: number[];
 }) {
   return (
-    <section className="relative flex min-h-[85vh] flex-col justify-end overflow-hidden bg-[radial-gradient(ellipse_at_top,_#2a2a2a,_#0c0c0c)] px-4 pb-10 pt-32 text-white sm:min-h-[90vh]">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+    <section className="relative flex min-h-[85vh] flex-col justify-end overflow-hidden px-4 pb-10 pt-32 text-white sm:min-h-[90vh]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#2a2a2a,_#0c0c0c)]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-6">
         <div>
           <h1 className="max-w-2xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
             Tu próximo auto te está esperando
