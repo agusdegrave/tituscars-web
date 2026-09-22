@@ -30,11 +30,9 @@ export default async function CatalogoPage({
   const { autos, total } = resultado;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="text-2xl font-bold tracking-tight">Catálogo</h1>
-
-      <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start">
-        <aside className="hidden w-[280px] shrink-0 lg:block">
+    <div className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6">
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <aside className="hidden w-[260px] shrink-0 lg:sticky lg:top-16 lg:block lg:max-h-[calc(100vh-4rem)] lg:overflow-x-hidden lg:overflow-y-auto lg:pr-1">
           <FiltrosPanel
             filtros={filtros}
             marcas={marcas}
@@ -45,7 +43,9 @@ export default async function CatalogoPage({
         </aside>
 
         <div className="min-w-0 flex-1">
-          <div className="mb-5 lg:hidden">
+          <h1 className="text-2xl font-bold tracking-tight">Catálogo</h1>
+
+          <div className="mb-5 mt-6 lg:hidden">
             <FiltrosDrawer
               filtros={filtros}
               marcas={marcas}
@@ -56,7 +56,7 @@ export default async function CatalogoPage({
             />
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 lg:mt-4">
             <CondicionTabs filtros={filtros} />
             <OrdenSelect filtros={filtros} />
           </div>
