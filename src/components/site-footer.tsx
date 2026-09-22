@@ -44,7 +44,7 @@ export function SiteFooter() {
             <Link href="/autos" className="hover:text-background">
               Catálogo
             </Link>
-            <Link href="/0km" className="hover:text-background">
+            <Link href="/autos?condicion=0km" className="hover:text-background">
               0 KM
             </Link>
             <Link href="/consigna" className="hover:text-background">

@@ -10,6 +10,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/0km",
+        destination: "/autos?condicion=0km",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

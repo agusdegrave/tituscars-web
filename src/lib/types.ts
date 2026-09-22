@@ -38,6 +38,7 @@ export interface AutoCatalogo {
   condicion: Condicion;
   moneda: Moneda;
   precio: number;
+  precio_ars: number;
   estado: Estado;
   destacado_web: boolean;
   descripcion_items: DescripcionItem[] | null;

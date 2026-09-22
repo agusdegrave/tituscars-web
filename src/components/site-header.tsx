@@ -9,7 +9,7 @@ import { linkWhatsapp } from "@/lib/whatsapp";
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/autos", label: "Catálogo" },
-  { href: "/0km", label: "0 KM" },
+  { href: "/autos?condicion=0km", label: "0 KM" },
   { href: "/consigna", label: "Consigná tu auto" },
   { href: "/vende-tu-auto", label: "Vendé tu auto" },
   { href: "/contacto", label: "Contacto" },

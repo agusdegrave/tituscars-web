@@ -1,14 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import type { AutoCatalogo, Condicion } from "@/lib/types";
+import type { AutoCatalogo } from "@/lib/types";
+import { POR_PAGINA, type Filtros } from "@/lib/filtros";
+import type { FacetRow } from "@/lib/facets";
 
 const TABLA = "catalogo_publico";
-
-export interface FiltrosCatalogo {
-  marca?: string;
-  modelo?: string;
-  anio?: string;
-  condicion?: Condicion;
-}
 
 export async function getDestacados(limite = 8): Promise<AutoCatalogo[]> {
   const { data: destacados } = await supabase
@@ -41,22 +36,6 @@ export async function getUltimosIngresos(limite = 12): Promise<AutoCatalogo[]> {
   return data ?? [];
 }
 
-export async function getMarcas(): Promise<string[]> {
-  const { data } = await supabase.from(TABLA).select("marca");
-  const set = new Set((data ?? []).map((r) => r.marca as string));
-  return Array.from(set).sort((a, b) => a.localeCompare(b));
-}
-
-export async function getModelosPorMarca(marca?: string): Promise<string[]> {
-  let query = supabase.from(TABLA).select("modelo");
-  if (marca) {
-    query = query.eq("marca", marca);
-  }
-  const { data } = await query;
-  const set = new Set((data ?? []).map((r) => r.modelo as string));
-  return Array.from(set).sort((a, b) => a.localeCompare(b));
-}
-
 export async function getMarcaModeloPairs(): Promise<
   { marca: string; modelo: string }[]
 > {
@@ -85,19 +64,67 @@ export async function getAnios(): Promise<number[]> {
   return Array.from(set).sort((a, b) => b - a);
 }
 
-export async function getAutosFiltrados(
-  filtros: FiltrosCatalogo = {}
-): Promise<AutoCatalogo[]> {
-  let query = supabase.from(TABLA).select("*");
+export interface ResultadoCatalogo {
+  autos: AutoCatalogo[];
+  total: number;
+}
 
-  if (filtros.marca) query = query.eq("marca", filtros.marca);
-  if (filtros.modelo) query = query.eq("modelo", filtros.modelo);
-  if (filtros.anio) query = query.eq("anio", Number(filtros.anio));
+export async function getAutosPaginados(filtros: Filtros): Promise<ResultadoCatalogo> {
+  let query = supabase.from(TABLA).select("*", { count: "exact" });
+
+  if (filtros.q) {
+    const texto = filtros.q.replace(/[,()]/g, " ").trim();
+    if (texto) {
+      const patron = `%${texto}%`;
+      query = query.or(
+        `marca.ilike.${patron},modelo.ilike.${patron},version.ilike.${patron}`
+      );
+    }
+  }
+
+  if (filtros.marca.length > 0) query = query.in("marca", filtros.marca);
+  if (filtros.modelo.length > 0) query = query.in("modelo", filtros.modelo);
+  if (filtros.anioMin) query = query.gte("anio", filtros.anioMin);
+  if (filtros.anioMax) query = query.lte("anio", filtros.anioMax);
+  if (filtros.precioMin) query = query.gte("precio_ars", filtros.precioMin);
+  if (filtros.precioMax) query = query.lte("precio_ars", filtros.precioMax);
+  if (filtros.kmMax) query = query.lte("km", filtros.kmMax);
+  if (filtros.combustible.length > 0) query = query.in("combustible", filtros.combustible);
+  if (filtros.transmision.length > 0) query = query.in("transmision", filtros.transmision);
+  if (filtros.carroceria.length > 0) query = query.in("carroceria", filtros.carroceria);
   if (filtros.condicion) query = query.eq("condicion", filtros.condicion);
+  if (filtros.sinSenados) query = query.neq("estado", "senado");
 
-  const { data } = await query
-    .order("destacado_web", { ascending: false })
-    .order("fecha_ingreso", { ascending: false });
+  switch (filtros.orden) {
+    case "precio_asc":
+      query = query.order("precio_ars", { ascending: true });
+      break;
+    case "precio_desc":
+      query = query.order("precio_ars", { ascending: false });
+      break;
+    case "nuevos":
+      query = query.order("anio", { ascending: false });
+      break;
+    case "km":
+      query = query.order("km", { ascending: true });
+      break;
+    default:
+      query = query
+        .order("destacado_web", { ascending: false })
+        .order("fecha_ingreso", { ascending: false });
+  }
+
+  const desde = (filtros.page - 1) * POR_PAGINA;
+  const hasta = desde + POR_PAGINA - 1;
+  const { data, count } = await query.range(desde, hasta);
+
+  return { autos: data ?? [], total: count ?? 0 };
+}
+
+export async function getFacetsBase(): Promise<FacetRow[]> {
+  const { data } = await supabase
+    .from(TABLA)
+    .select("marca, modelo, combustible, transmision, carroceria");
 
   return data ?? [];
 }

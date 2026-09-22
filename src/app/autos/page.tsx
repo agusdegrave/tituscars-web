@@ -1,24 +1,84 @@
 import { AutoGrid } from "@/components/auto-grid";
-import { getAutosFiltrados } from "@/lib/autos";
+import { FiltrosPanel } from "@/components/catalogo/filtros-panel";
+import { FiltrosDrawer } from "@/components/catalogo/filtros-drawer";
+import { FiltrosActivos } from "@/components/catalogo/filtros-activos";
+import { CondicionTabs } from "@/components/catalogo/condicion-tabs";
+import { OrdenSelect } from "@/components/catalogo/orden-select";
+import { Paginacion } from "@/components/catalogo/paginacion";
+import { EstadoVacio } from "@/components/catalogo/estado-vacio";
+import { getAnios, getAutosPaginados, getFacetsBase } from "@/lib/autos";
+import { calcularFacets } from "@/lib/facets";
+import { parseFiltros, type SearchParamsCatalogo } from "@/lib/filtros";
 
 export const revalidate = 60;
 
 export default async function CatalogoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ marca?: string; modelo?: string; anio?: string }>;
+  searchParams: Promise<SearchParamsCatalogo>;
 }) {
-  const { marca, modelo, anio } = await searchParams;
-  const autos = await getAutosFiltrados({ marca, modelo, anio });
+  const sp = await searchParams;
+  const filtros = parseFiltros(sp);
+
+  const [facetRows, anios, resultado] = await Promise.all([
+    getFacetsBase(),
+    getAnios(),
+    getAutosPaginados(filtros),
+  ]);
+
+  const { marcas, hayTransmision, hayCarroceria } = calcularFacets(facetRows);
+  const { autos, total } = resultado;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-2xl font-bold tracking-tight">Catálogo</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        {autos.length} {autos.length === 1 ? "auto encontrado" : "autos encontrados"}
-      </p>
-      <div className="mt-6">
-        <AutoGrid autos={autos} />
+
+      <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start">
+        <aside className="hidden w-[280px] shrink-0 lg:block">
+          <FiltrosPanel
+            filtros={filtros}
+            marcas={marcas}
+            anios={anios}
+            hayTransmision={hayTransmision}
+            hayCarroceria={hayCarroceria}
+          />
+        </aside>
+
+        <div className="min-w-0 flex-1">
+          <div className="mb-5 lg:hidden">
+            <FiltrosDrawer
+              filtros={filtros}
+              marcas={marcas}
+              anios={anios}
+              hayTransmision={hayTransmision}
+              hayCarroceria={hayCarroceria}
+              total={total}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <CondicionTabs filtros={filtros} />
+            <OrdenSelect filtros={filtros} />
+          </div>
+
+          <div className="mt-4">
+            <FiltrosActivos filtros={filtros} />
+          </div>
+
+          <p className="mt-4 text-sm text-muted-foreground">
+            {total} {total === 1 ? "auto" : "autos"}
+          </p>
+
+          <div className="mt-4">
+            {autos.length > 0 ? (
+              <AutoGrid autos={autos} />
+            ) : (
+              <EstadoVacio textoBusqueda={filtros.q} />
+            )}
+          </div>
+
+          <Paginacion filtros={filtros} total={total} />
+        </div>
       </div>
     </div>
   );

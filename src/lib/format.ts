@@ -13,6 +13,17 @@ export function formatKm(km: number): string {
   return `${numeroAR.format(km)} km`;
 }
 
+export function formatMiles(valor: number | string): string {
+  const digitos = String(valor).replace(/\D/g, "");
+  if (!digitos) return "";
+  return numeroAR.format(Number(digitos));
+}
+
+export function parseMiles(texto: string): number | undefined {
+  const digitos = texto.replace(/\D/g, "");
+  return digitos ? Number(digitos) : undefined;
+}
+
 export function tituloAuto(a: {
   marca: string;
   modelo: string;
