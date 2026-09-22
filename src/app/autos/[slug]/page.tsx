@@ -83,7 +83,7 @@ export default async function FichaAutoPage({
             <p className="text-muted-foreground">{auto.anio}</p>
             <p className="mt-2 text-3xl font-black">{precioFormateado}</p>
             {auto.estado === "senado" && (
-              <p className="mt-1 text-sm font-medium text-primary">
+              <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-brand-black px-2.5 py-1 text-sm font-medium text-white">
                 Este auto está señado. Consultanos por unidades similares.
               </p>
             )}

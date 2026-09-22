@@ -60,12 +60,12 @@ export function FichaGallery({
         />
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {senado && (
-            <span className="rounded-md bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-primary-foreground">
+            <span className="rounded-md bg-brand-black px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Señado
             </span>
           )}
           {ceroKm && (
-            <span className="rounded-md bg-foreground px-2 py-1 text-xs font-bold uppercase tracking-wide text-background">
+            <span className="rounded-md bg-brand px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
               0 KM
             </span>
           )}

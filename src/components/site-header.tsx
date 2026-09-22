@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,8 +22,15 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="text-xl font-black tracking-tight">
-          TITUS CARS
+        <Link href="/" className="shrink-0">
+          <Image
+            src="/brand/logo-horizontal.svg"
+            alt="Titus Cars"
+            width={136}
+            height={40}
+            priority
+            className="h-8 w-auto lg:h-10"
+          />
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex">

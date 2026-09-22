@@ -1,11 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 import { linkWhatsapp } from "@/lib/whatsapp";
+import { RESENAS_URL } from "@/lib/config";
 import { InstagramIcon, YoutubeIcon, StarIcon } from "@/components/icons/social-icons";
 
 const TIKTOK_URL = "https://www.tiktok.com/@titus.cars";
 const INSTAGRAM_URL = "https://www.instagram.com/titus.cars";
 const YOUTUBE_URL = "https://www.youtube.com/@titus.cars";
-const RESENAS_URL = "https://maps.app.goo.gl/Vsu7RQMskAvEWuCm8";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -19,48 +20,52 @@ export function SiteFooter() {
   const nombre = process.env.NEXT_PUBLIC_SITE_NAME ?? "Titus Cars";
 
   return (
-    <footer className="border-t border-border bg-foreground text-background">
+    <footer className="border-t border-brand-black bg-brand-black text-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <p className="text-lg font-black tracking-tight">{nombre.toUpperCase()}</p>
-          <p className="mt-3 text-sm text-background/70">
-            Av. Duarte Quirós 3996, Córdoba
-          </p>
+          <Image
+            src="/brand/logo-horizontal-blanco.svg"
+            alt="Titus Cars"
+            width={123}
+            height={36}
+            className="h-9 w-auto"
+          />
+          <p className="mt-4 text-sm text-white/70">Av. Duarte Quirós 3996, Córdoba</p>
           <a
             href={linkWhatsapp()}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 block text-sm text-background/70 hover:text-background"
+            className="mt-1 block text-sm text-white/70 hover:text-brand"
           >
             +54 9 351 328-3316
           </a>
         </div>
 
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-background/60">
+          <p className="text-sm font-semibold uppercase tracking-wide text-white/50">
             Navegación
           </p>
-          <nav className="mt-3 flex flex-col gap-2 text-sm text-background/70">
-            <Link href="/autos" className="hover:text-background">
+          <nav className="mt-3 flex flex-col gap-2 text-sm text-white/70">
+            <Link href="/autos" className="hover:text-brand">
               Catálogo
             </Link>
-            <Link href="/autos?condicion=0km" className="hover:text-background">
+            <Link href="/autos?condicion=0km" className="hover:text-brand">
               0 KM
             </Link>
-            <Link href="/consigna" className="hover:text-background">
+            <Link href="/consigna" className="hover:text-brand">
               Consigná tu auto
             </Link>
-            <Link href="/vende-tu-auto" className="hover:text-background">
+            <Link href="/vende-tu-auto" className="hover:text-brand">
               Vendé tu auto
             </Link>
-            <Link href="/contacto" className="hover:text-background">
+            <Link href="/contacto" className="hover:text-brand">
               Contacto
             </Link>
           </nav>
         </div>
 
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-background/60">
+          <p className="text-sm font-semibold uppercase tracking-wide text-white/50">
             Seguinos
           </p>
           <div className="mt-3 flex items-center gap-4">
@@ -69,7 +74,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="text-background/70 hover:text-background"
+              className="text-white hover:text-brand"
             >
               <InstagramIcon className="h-5 w-5" />
             </a>
@@ -78,7 +83,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="TikTok"
-              className="text-background/70 hover:text-background"
+              className="text-white hover:text-brand"
             >
               <TikTokIcon className="h-5 w-5" />
             </a>
@@ -87,7 +92,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
-              className="text-background/70 hover:text-background"
+              className="text-white hover:text-brand"
             >
               <YoutubeIcon className="h-5 w-5" />
             </a>
@@ -96,7 +101,7 @@ export function SiteFooter() {
             href={RESENAS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-1.5 text-sm text-background/70 hover:text-background"
+            className="mt-4 inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-brand"
           >
             <StarIcon className="h-4 w-4" />
             Ver reseñas en Google
@@ -104,7 +109,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-background/10 px-4 py-4 text-center text-xs text-background/50">
+      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/50">
         © {new Date().getFullYear()} {nombre}. Todos los derechos reservados.
       </div>
     </footer>

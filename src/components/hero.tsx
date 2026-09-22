@@ -10,21 +10,21 @@ export function Hero({
   anios: number[];
 }) {
   return (
-    <section className="relative flex min-h-[85vh] flex-col justify-end overflow-hidden px-4 pb-10 pt-32 text-white sm:min-h-[90vh]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#2a2a2a,_#0c0c0c)]" />
+    <section className="relative flex min-h-[85vh] flex-col justify-end overflow-hidden bg-brand-black px-4 pb-10 pt-32 text-white sm:min-h-[90vh]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#2a2a2a,_#141414)]" />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-6">
         <div>
           <h1 className="max-w-2xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            Tu próximo auto te está esperando
+            Tu próximo auto está en <span className="text-brand">Titus.</span>
           </h1>
           <p className="mt-4 max-w-xl text-lg text-white/70">
             Usados peritados y con garantía en Córdoba
           </p>
           <Button
             size="lg"
-            className="mt-6 h-12 px-6 text-base"
+            className="mt-6 h-12 rounded-full px-6 text-base"
             render={<Link href="/autos" />}
             nativeButton={false}
           >

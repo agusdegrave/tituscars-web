@@ -23,7 +23,7 @@ export function VideoSection({ videoUrl }: { videoUrl: string | null }) {
           href={videoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block text-sm font-medium text-primary underline underline-offset-2"
+          className="mt-2 inline-block text-sm font-semibold text-foreground underline underline-offset-2 hover:text-brand"
         >
           Ver video
         </a>

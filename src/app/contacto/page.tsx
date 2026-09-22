@@ -10,7 +10,7 @@ export default function ContactoPage() {
           href={linkWhatsapp()}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-primary underline underline-offset-2"
+          className="font-semibold text-foreground underline underline-offset-2 hover:text-brand"
         >
           WhatsApp
         </a>{" "}

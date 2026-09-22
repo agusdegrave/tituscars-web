@@ -1,5 +1,6 @@
 import { Hero } from "@/components/hero";
 import { FeaturedCarousel } from "@/components/featured-carousel";
+import { BeneficiosBanner } from "@/components/beneficios-banner";
 import { AccesosBlock } from "@/components/accesos-block";
 import { AutoGrid } from "@/components/auto-grid";
 import {
@@ -29,6 +30,8 @@ export default async function HomePage() {
           <FeaturedCarousel autos={destacados} />
         </div>
       </section>
+
+      <BeneficiosBanner />
 
       <AccesosBlock />
 

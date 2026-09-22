@@ -78,7 +78,7 @@ export function SearchForm({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 rounded-xl border border-border bg-card p-4 shadow-lg sm:grid-cols-4 sm:gap-2">
+    <div className="grid grid-cols-1 gap-3 rounded-xl border border-border bg-card p-4 text-foreground shadow-lg sm:grid-cols-4 sm:gap-2">
       <Select items={itemsMarca} value={marca} onValueChange={handleMarcaChange}>
         <SelectTrigger className="w-full sm:h-11">
           <SelectValue placeholder="Marca" />
