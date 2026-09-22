@@ -1,7 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { linkWhatsapp } from "@/lib/whatsapp";
-import { RESENAS_URL, INSTAGRAM_URL, TIKTOK_URL, YOUTUBE_URL } from "@/lib/config";
+import {
+  RESENAS_URL,
+  INSTAGRAM_URL,
+  TIKTOK_URL,
+  YOUTUBE_URL,
+  DIRECCION,
+  TELEFONO_DISPLAY,
+} from "@/lib/config";
 import { InstagramIcon, YoutubeIcon, StarIcon, TikTokIcon } from "@/components/icons/social-icons";
 
 export function SiteFooter() {
@@ -18,14 +25,14 @@ export function SiteFooter() {
             height={36}
             className="h-9 w-auto"
           />
-          <p className="mt-4 text-sm text-white/70">Av. Duarte Quirós 3996, Córdoba</p>
+          <p className="mt-4 text-sm text-white/70">{DIRECCION}</p>
           <a
             href={linkWhatsapp()}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-1 block text-sm text-white/70 hover:text-brand"
           >
-            +54 9 351 328-3316
+            {TELEFONO_DISPLAY}
           </a>
         </div>
 

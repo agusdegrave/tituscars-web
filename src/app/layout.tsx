@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ResenasBanner } from "@/components/resenas-banner";
 import { WhatsappFloatingButton } from "@/components/whatsapp-floating-button";
 import { Toaster } from "@/components/ui/toast";
+import { SITE_URL } from "@/lib/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,7 +25,7 @@ const descripcion =
   "Catálogo de autos usados y 0km en Córdoba. Peritados, con garantía y consigna virtual.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://tituscars.com"),
+  metadataBase: new URL(SITE_URL),
   title: titulo,
   description: descripcion,
   manifest: "/manifest.webmanifest",

@@ -9,6 +9,7 @@ import { Descripcion } from "@/components/ficha/descripcion";
 import { VideoSection } from "@/components/ficha/video";
 import { Confianza } from "@/components/ficha/confianza";
 import { AutoGrid } from "@/components/auto-grid";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 60;
 
@@ -65,8 +66,32 @@ export default async function FichaAutoPage({
       ? [{ url: auto.foto_principal, orden: 0, principal: true }]
       : [];
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Car",
+    name: titulo,
+    brand: { "@type": "Brand", name: auto.marca },
+    model: [auto.modelo, auto.version].filter(Boolean).join(" "),
+    vehicleModelDate: String(auto.anio),
+    mileageFromOdometer: {
+      "@type": "QuantitativeValue",
+      value: auto.km,
+      unitCode: "KMT",
+    },
+    ...(auto.foto_principal ? { image: auto.foto_principal } : {}),
+    offers: {
+      "@type": "Offer",
+      price: auto.precio,
+      priceCurrency: auto.moneda,
+      availability:
+        auto.estado === "senado" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+    },
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 pb-28 sm:pb-8">
+      <JsonLd data={jsonLd} />
+
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
         <div className="lg:col-span-3">
           <FichaGallery

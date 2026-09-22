@@ -10,6 +10,17 @@ export async function getTotalEnStock(): Promise<number> {
   return count ?? 0;
 }
 
+export interface AutoParaSitemap {
+  slug: string;
+  actualizado_en: string;
+}
+
+/** Slug + fecha de actualización de cada auto, para el sitemap (tanda 7). */
+export async function getAutosParaSitemap(): Promise<AutoParaSitemap[]> {
+  const { data } = await supabase.from(TABLA).select("slug, actualizado_en");
+  return data ?? [];
+}
+
 export async function getDestacados(limite = 8): Promise<AutoCatalogo[]> {
   const { data: destacados } = await supabase
     .from(TABLA)

@@ -3,14 +3,19 @@ import { MapPin, Clock } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { InstagramIcon } from "@/components/icons/social-icons";
 import { linkWhatsapp } from "@/lib/whatsapp";
-import { HORARIOS, INSTAGRAM_URL, RESENAS_URL } from "@/lib/config";
+import {
+  HORARIOS,
+  INSTAGRAM_URL,
+  RESENAS_URL,
+  DIRECCION,
+  TELEFONO_DISPLAY,
+} from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Contacto | Titus Cars",
   description: "Dirección, WhatsApp y horarios de Titus Cars en Córdoba.",
 };
 
-const DIRECCION = "Av. Duarte Quirós 3996, Córdoba";
 const CONSULTA_TITULO = `Titus Cars, ${DIRECCION}`;
 const MAPS_EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(CONSULTA_TITULO)}&output=embed`;
 const MAPS_DIRECCIONES = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(CONSULTA_TITULO)}`;
@@ -47,7 +52,7 @@ export default function ContactoPage() {
                 rel="noopener noreferrer"
                 className="text-sm text-muted-foreground underline underline-offset-2 hover:text-brand"
               >
-                +54 9 351 328-3316
+                {TELEFONO_DISPLAY}
               </a>
             </div>
           </div>
