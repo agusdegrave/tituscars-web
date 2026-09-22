@@ -1,9 +1,48 @@
-import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAutoPorSlug } from "@/lib/autos";
-import { formatPrecio, tituloAuto } from "@/lib/format";
+import { getAutoPorSlug, getSimilares } from "@/lib/autos";
+import { formatKm, formatPrecio, tituloAuto } from "@/lib/format";
+import { FichaGallery } from "@/components/ficha/gallery";
+import { FichaTecnica } from "@/components/ficha/ficha-tecnica";
+import { WhatsappCta } from "@/components/ficha/whatsapp-bar";
+import { Descripcion } from "@/components/ficha/descripcion";
+import { VideoSection } from "@/components/ficha/video";
+import { Confianza } from "@/components/ficha/confianza";
+import { AutoGrid } from "@/components/auto-grid";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const auto = await getAutoPorSlug(slug);
+
+  if (!auto) return {};
+
+  const titulo = `${tituloAuto(auto)} ${auto.anio}`;
+  const descripcion = [
+    String(auto.anio),
+    formatKm(auto.km),
+    auto.combustible,
+    formatPrecio(auto.precio, auto.moneda),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  return {
+    title: `${titulo} | Titus Cars`,
+    description: descripcion,
+    openGraph: {
+      title: `${titulo} | Titus Cars`,
+      description: descripcion,
+      type: "website",
+      images: auto.foto_principal ? [{ url: auto.foto_principal }] : undefined,
+    },
+  };
+}
 
 export default async function FichaAutoPage({
   params,
@@ -17,32 +56,66 @@ export default async function FichaAutoPage({
     notFound();
   }
 
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-2xl font-bold tracking-tight uppercase">
-        {tituloAuto(auto)}
-      </h1>
+  const similares = await getSimilares(auto);
+  const titulo = tituloAuto(auto);
+  const precioFormateado = formatPrecio(auto.precio, auto.moneda);
+  const fotos = auto.fotos && auto.fotos.length > 0
+    ? auto.fotos
+    : auto.foto_principal
+      ? [{ url: auto.foto_principal, orden: 0, principal: true }]
+      : [];
 
-      {auto.foto_principal && (
-        <div className="relative mt-6 aspect-[4/3] w-full overflow-hidden rounded-xl bg-muted">
-          <Image
-            src={auto.foto_principal}
-            alt={tituloAuto(auto)}
-            fill
-            sizes="(min-width: 768px) 768px, 100vw"
-            className="object-cover"
-            priority
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-8 pb-28 sm:pb-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+        <div className="lg:col-span-3">
+          <FichaGallery
+            fotos={fotos}
+            alt={titulo}
+            senado={auto.estado === "senado"}
+            ceroKm={auto.condicion === "0km"}
           />
+        </div>
+
+        <div className="flex flex-col gap-6 lg:col-span-2">
+          <div>
+            <h1 className="text-2xl font-bold uppercase tracking-tight">{titulo}</h1>
+            <p className="text-muted-foreground">{auto.anio}</p>
+            <p className="mt-2 text-3xl font-black">{precioFormateado}</p>
+            {auto.estado === "senado" && (
+              <p className="mt-1 text-sm font-medium text-primary">
+                Este auto está señado. Consultanos por unidades similares.
+              </p>
+            )}
+          </div>
+
+          <WhatsappCta
+            titulo={titulo}
+            anio={auto.anio}
+            precioFormateado={precioFormateado}
+          />
+
+          <FichaTecnica auto={auto} />
+        </div>
+      </div>
+
+      <div className="mt-12 flex flex-col gap-12">
+        <Descripcion items={auto.descripcion_items} extra={auto.descripcion_extra} />
+        <VideoSection videoUrl={auto.video_url} />
+      </div>
+
+      {similares.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-lg font-bold">Te puede interesar</h2>
+          <div className="mt-4">
+            <AutoGrid autos={similares} />
+          </div>
         </div>
       )}
 
-      <p className="mt-6 text-3xl font-black">
-        {formatPrecio(auto.precio, auto.moneda)}
-      </p>
-
-      <p className="mt-8 rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-        Ficha completa en construcción.
-      </p>
+      <div className="mt-12">
+        <Confianza />
+      </div>
     </div>
   );
 }

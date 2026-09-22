@@ -111,3 +111,59 @@ export async function getAutoPorSlug(slug: string): Promise<AutoCatalogo | null>
 
   return data;
 }
+
+export async function getSimilares(
+  auto: AutoCatalogo,
+  limite = 4
+): Promise<AutoCatalogo[]> {
+  const resultado: AutoCatalogo[] = [];
+  const idsUsados = new Set<string>([auto.id]);
+
+  const { data: porMarca } = await supabase
+    .from(TABLA)
+    .select("*")
+    .eq("marca", auto.marca)
+    .neq("id", auto.id)
+    .order("fecha_ingreso", { ascending: false })
+    .limit(limite);
+
+  for (const item of porMarca ?? []) {
+    resultado.push(item);
+    idsUsados.add(item.id);
+  }
+
+  if (resultado.length < limite && auto.carroceria) {
+    const { data: porCarroceria } = await supabase
+      .from(TABLA)
+      .select("*")
+      .eq("carroceria", auto.carroceria)
+      .neq("id", auto.id)
+      .order("fecha_ingreso", { ascending: false })
+      .limit(limite);
+
+    for (const item of porCarroceria ?? []) {
+      if (resultado.length >= limite) break;
+      if (idsUsados.has(item.id)) continue;
+      resultado.push(item);
+      idsUsados.add(item.id);
+    }
+  }
+
+  if (resultado.length < limite) {
+    const { data: recientes } = await supabase
+      .from(TABLA)
+      .select("*")
+      .neq("id", auto.id)
+      .order("fecha_ingreso", { ascending: false })
+      .limit(limite + idsUsados.size);
+
+    for (const item of recientes ?? []) {
+      if (resultado.length >= limite) break;
+      if (idsUsados.has(item.id)) continue;
+      resultado.push(item);
+      idsUsados.add(item.id);
+    }
+  }
+
+  return resultado.slice(0, limite);
+}

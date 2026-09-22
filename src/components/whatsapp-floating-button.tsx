@@ -1,7 +1,18 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { linkWhatsapp } from "@/lib/whatsapp";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 
+const RUTA_FICHA = /^\/autos\/[^/]+$/;
+
 export function WhatsappFloatingButton() {
+  const pathname = usePathname();
+
+  if (RUTA_FICHA.test(pathname)) {
+    return null;
+  }
+
   return (
     <a
       href={linkWhatsapp()}
