@@ -18,7 +18,7 @@ const ACCESOS = [
   {
     titulo: "Financiación",
     texto: "Financiá tu próximo auto con las mejores condiciones del mercado.",
-    href: "/contacto",
+    href: "/financiacion",
     cta: "Quiero saber más",
   },
 ];

@@ -13,6 +13,8 @@ const NAV_LINKS = [
   { href: "/autos?condicion=0km", label: "0 KM" },
   { href: "/consigna", label: "Consigná tu auto" },
   { href: "/vende-tu-auto", label: "Vendé tu auto" },
+  { href: "/financiacion", label: "Financiación" },
+  { href: "/nosotros", label: "Nosotros" },
   { href: "/contacto", label: "Contacto" },
 ];
 

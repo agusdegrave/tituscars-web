@@ -1,20 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { linkWhatsapp } from "@/lib/whatsapp";
-import { RESENAS_URL } from "@/lib/config";
-import { InstagramIcon, YoutubeIcon, StarIcon } from "@/components/icons/social-icons";
-
-const TIKTOK_URL = "https://www.tiktok.com/@titus.cars";
-const INSTAGRAM_URL = "https://www.instagram.com/titus.cars";
-const YOUTUBE_URL = "https://www.youtube.com/@titus.cars";
-
-function TikTokIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M16.6 5.82c-1.02-.89-1.64-2.18-1.64-3.62h-3.12v14.24c0 1.53-1.25 2.78-2.78 2.78a2.78 2.78 0 0 1-2.78-2.78 2.78 2.78 0 0 1 2.78-2.78c.29 0 .57.04.83.13V10.6a5.9 5.9 0 0 0-.83-.06A5.9 5.9 0 0 0 3.16 16.44 5.9 5.9 0 0 0 9.06 22.3a5.9 5.9 0 0 0 5.9-5.86V9.03a8.24 8.24 0 0 0 4.82 1.55V7.46a5.15 5.15 0 0 1-3.18-1.64z" />
-    </svg>
-  );
-}
+import { RESENAS_URL, INSTAGRAM_URL, TIKTOK_URL, YOUTUBE_URL } from "@/lib/config";
+import { InstagramIcon, YoutubeIcon, StarIcon, TikTokIcon } from "@/components/icons/social-icons";
 
 export function SiteFooter() {
   const nombre = process.env.NEXT_PUBLIC_SITE_NAME ?? "Titus Cars";
@@ -57,6 +45,12 @@ export function SiteFooter() {
             </Link>
             <Link href="/vende-tu-auto" className="hover:text-brand">
               Vendé tu auto
+            </Link>
+            <Link href="/financiacion" className="hover:text-brand">
+              Financiación
+            </Link>
+            <Link href="/nosotros" className="hover:text-brand">
+              Nosotros
             </Link>
             <Link href="/contacto" className="hover:text-brand">
               Contacto

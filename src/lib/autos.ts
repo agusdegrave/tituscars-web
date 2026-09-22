@@ -5,6 +5,11 @@ import type { FacetRow } from "@/lib/facets";
 
 const TABLA = "catalogo_publico";
 
+export async function getTotalEnStock(): Promise<number> {
+  const { count } = await supabase.from(TABLA).select("*", { count: "exact", head: true });
+  return count ?? 0;
+}
+
 export async function getDestacados(limite = 8): Promise<AutoCatalogo[]> {
   const { data: destacados } = await supabase
     .from(TABLA)

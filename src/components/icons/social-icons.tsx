@@ -25,3 +25,11 @@ export function StarIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function TikTokIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M16.6 5.82c-1.02-.89-1.64-2.18-1.64-3.62h-3.12v14.24c0 1.53-1.25 2.78-2.78 2.78a2.78 2.78 0 0 1-2.78-2.78 2.78 2.78 0 0 1 2.78-2.78c.29 0 .57.04.83.13V10.6a5.9 5.9 0 0 0-.83-.06A5.9 5.9 0 0 0 3.16 16.44 5.9 5.9 0 0 0 9.06 22.3a5.9 5.9 0 0 0 5.9-5.86V9.03a8.24 8.24 0 0 0 4.82 1.55V7.46a5.15 5.15 0 0 1-3.18-1.64z" />
+    </svg>
+  );
+}
