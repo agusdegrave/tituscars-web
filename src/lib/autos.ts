@@ -130,6 +130,10 @@ export async function getAutosPaginados(filtros: Filtros): Promise<ResultadoCata
         .order("fecha_ingreso", { ascending: false });
   }
 
+  // Desempate estable: sin esto, autos con el mismo precio/fecha pueden
+  // repetirse o saltearse entre tandas del scroll infinito.
+  query = query.order("id", { ascending: true });
+
   const desde = (filtros.page - 1) * POR_PAGINA;
   const hasta = desde + POR_PAGINA - 1;
   const { data, count } = await query.range(desde, hasta);
