@@ -1,14 +1,13 @@
-import { AutoGrid } from "@/components/auto-grid";
 import { FiltrosPanel } from "@/components/catalogo/filtros-panel";
 import { FiltrosDrawer } from "@/components/catalogo/filtros-drawer";
 import { FiltrosActivos } from "@/components/catalogo/filtros-activos";
 import { CondicionTabs } from "@/components/catalogo/condicion-tabs";
 import { OrdenSelect } from "@/components/catalogo/orden-select";
-import { Paginacion } from "@/components/catalogo/paginacion";
+import { CatalogoInfinito } from "@/components/catalogo/catalogo-infinito";
 import { EstadoVacio } from "@/components/catalogo/estado-vacio";
 import { getAnios, getAutosPaginados, getFacetsBase } from "@/lib/autos";
 import { calcularFacets } from "@/lib/facets";
-import { parseFiltros, type SearchParamsCatalogo } from "@/lib/filtros";
+import { filtrosAParams, parseFiltros, type SearchParamsCatalogo } from "@/lib/filtros";
 
 export const revalidate = 60;
 
@@ -18,7 +17,9 @@ export default async function CatalogoPage({
   searchParams: Promise<SearchParamsCatalogo>;
 }) {
   const sp = await searchParams;
-  const filtros = parseFiltros(sp);
+  // Scroll infinito: siempre arranca en la primera tanda (un ?page= viejo se ignora).
+  const filtros = { ...parseFiltros(sp), page: 1 };
+  const claveFiltros = filtrosAParams(filtros).toString();
 
   const [facetRows, anios, resultado] = await Promise.all([
     getFacetsBase(),
@@ -71,13 +72,17 @@ export default async function CatalogoPage({
 
           <div className="mt-4">
             {autos.length > 0 ? (
-              <AutoGrid autos={autos} />
+              <CatalogoInfinito
+                key={claveFiltros}
+                inicial={autos}
+                total={total}
+                filtros={filtros}
+                claveFiltros={claveFiltros}
+              />
             ) : (
               <EstadoVacio textoBusqueda={filtros.q} />
             )}
           </div>
-
-          <Paginacion filtros={filtros} total={total} />
         </div>
       </div>
     </div>
