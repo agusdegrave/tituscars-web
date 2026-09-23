@@ -47,29 +47,29 @@ export default async function CatalogoPage({
           <div className="flex flex-wrap items-center justify-between gap-3 lg:grid lg:grid-cols-[1fr_auto_1fr]">
             <h1 className="text-2xl font-bold tracking-tight">Catálogo</h1>
             <CondicionTabs filtros={filtros} />
-            <div className="lg:justify-self-end">
+            <div className="hidden lg:block lg:justify-self-end">
               <OrdenSelect filtros={filtros} />
             </div>
           </div>
 
-          <div className="mb-5 mt-6 lg:hidden">
+          {/* Celu: Filtros y orden en la misma fila, mitad y mitad. */}
+          <div className="mb-5 mt-6 grid grid-cols-2 gap-2 lg:hidden">
             <FiltrosDrawer
               filtros={filtros}
               marcas={marcas}
               anios={anios}
               hayTransmision={hayTransmision}
               hayCarroceria={hayCarroceria}
-              total={total}
+            />
+            <OrdenSelect
+              filtros={filtros}
+              className="h-10 w-full justify-center border-border bg-background px-2.5 font-medium hover:bg-muted *:data-[slot=select-value]:flex-none"
             />
           </div>
 
           <div className="mt-4">
             <FiltrosActivos filtros={filtros} />
           </div>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-            {total} {total === 1 ? "auto" : "autos"}
-          </p>
 
           <div className="mt-4">
             {autos.length > 0 ? (

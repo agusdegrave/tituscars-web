@@ -8,11 +8,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { filtrosAParams, ORDEN_DEFECTO, OPCIONES_ORDEN, type Filtros } from "@/lib/filtros";
 
 const ITEMS = Object.fromEntries(OPCIONES_ORDEN.map((o) => [o.value, o.label]));
 
-export function OrdenSelect({ filtros }: { filtros: Filtros }) {
+export function OrdenSelect({
+  filtros,
+  className,
+}: {
+  filtros: Filtros;
+  className?: string;
+}) {
   const router = useRouter();
 
   return (
@@ -25,8 +32,13 @@ export function OrdenSelect({ filtros }: { filtros: Filtros }) {
         router.push(`/autos${params.size > 0 ? `?${params.toString()}` : ""}`);
       }}
     >
-      <SelectTrigger className="w-fit">
-        <SelectValue />
+      <SelectTrigger className={cn("w-fit", className)}>
+        {/* Con el orden por defecto no se muestra "Más recientes", sino la invitación a ordenar. */}
+        <SelectValue>
+          {(valor: string) =>
+            valor === ORDEN_DEFECTO ? "Ordenar por" : (ITEMS[valor] ?? "Ordenar por")
+          }
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {OPCIONES_ORDEN.map((op) => (

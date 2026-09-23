@@ -20,14 +20,12 @@ export function FiltrosDrawer({
   anios,
   hayTransmision,
   hayCarroceria,
-  total,
 }: {
   filtros: Filtros;
   marcas: FacetMarca[];
   anios: number[];
   hayTransmision: boolean;
   hayCarroceria: boolean;
-  total: number;
 }) {
   const [abierto, setAbierto] = useState(false);
   const cantidadActivos = contarFiltrosActivos(filtros);
@@ -36,7 +34,7 @@ export function FiltrosDrawer({
     <Sheet open={abierto} onOpenChange={setAbierto}>
       <Button
         variant="outline"
-        className="w-full justify-center gap-2 lg:hidden"
+        className="h-10 w-full justify-center gap-2 lg:hidden"
         onClick={() => setAbierto(true)}
       >
         <SlidersHorizontal className="h-4 w-4" />
@@ -60,7 +58,7 @@ export function FiltrosDrawer({
 
         <SheetFooter>
           <Button onClick={() => setAbierto(false)} size="lg">
-            Ver {total} {total === 1 ? "auto" : "autos"}
+            Ver resultados
           </Button>
         </SheetFooter>
       </SheetContent>
