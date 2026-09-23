@@ -50,9 +50,6 @@ export function SiteFooter() {
             <Link href="/consigna" className="hover:text-brand">
               Consigná tu auto
             </Link>
-            <Link href="/vende-tu-auto" className="hover:text-brand">
-              Vendé tu auto
-            </Link>
             <Link href="/financiacion" className="hover:text-brand">
               Financiación
             </Link>

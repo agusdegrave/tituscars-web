@@ -2,6 +2,18 @@ import type { Condicion } from "@/lib/types";
 
 export const POR_PAGINA = 24;
 
+// Rangos fijos de precio del catálogo, pensados para el stock real (cada uno
+// agrupa ~10 autos). El máximo es "N - 1" para que un auto de exactamente
+// $20M no caiga en dos rangos a la vez.
+export const PRECIO_PRESETS: { label: string; min?: number; max?: number }[] = [
+  { label: "Hasta $15M", min: undefined, max: 14_999_999 },
+  { label: "$15M a $20M", min: 15_000_000, max: 19_999_999 },
+  { label: "$20M a $25M", min: 20_000_000, max: 24_999_999 },
+  { label: "$25M a $30M", min: 25_000_000, max: 29_999_999 },
+  { label: "$30M a $40M", min: 30_000_000, max: 39_999_999 },
+  { label: "Más de $40M", min: 40_000_000, max: undefined },
+];
+
 export const ORDEN_DEFECTO = "relevancia";
 
 export const OPCIONES_ORDEN: { value: string; label: string }[] = [

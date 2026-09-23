@@ -10,12 +10,6 @@ const ACCESOS = [
     cta: "Quiero consignar",
   },
   {
-    titulo: "Vendé tu auto",
-    texto: "Te lo compramos directo, con una tasación justa y el pago al instante.",
-    href: "/vende-tu-auto",
-    cta: "Quiero vender",
-  },
-  {
     titulo: "Financiación",
     texto: "Financiá tu próximo auto con las mejores condiciones del mercado.",
     href: "/financiacion",
@@ -26,7 +20,7 @@ const ACCESOS = [
 export function AccesosBlock() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16">
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {ACCESOS.map((acceso) => (
           <div
             key={acceso.titulo}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,7 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatMiles, parseMiles } from "@/lib/format";
-import { filtrosAParams, toggleEnArray, type Filtros } from "@/lib/filtros";
+import { cn } from "@/lib/utils";
+import { filtrosAParams, PRECIO_PRESETS, toggleEnArray, type Filtros } from "@/lib/filtros";
 import { modelosParaMarcas, type FacetMarca } from "@/lib/facets";
 
 const COMBUSTIBLES = ["Nafta", "Diesel", "GNC", "Híbrido"];
@@ -31,12 +32,6 @@ const CARROCERIAS: { value: string; label: string }[] = [
   { value: "moto", label: "Moto" },
 ];
 const KM_OPCIONES = [50000, 100000, 150000, 200000];
-const PRECIO_PRESETS = [
-  { label: "Hasta 15M", min: undefined, max: 15_000_000 },
-  { label: "15M a 25M", min: 15_000_000, max: 25_000_000 },
-  { label: "25M a 40M", min: 25_000_000, max: 40_000_000 },
-  { label: "Más de 40M", min: 40_000_000, max: undefined },
-];
 const TODOS = "__todos__";
 
 function BusquedaInput({
@@ -74,6 +69,49 @@ function BusquedaInput({
   );
 }
 
+/**
+ * Categoría de filtro desplegable (tipo acordeón). Arranca abierta solo si
+ * tiene algo elegido, para que el panel se vea corto y ordenado.
+ */
+function Seccion({
+  titulo,
+  activos = 0,
+  children,
+}: {
+  titulo: string;
+  activos?: number;
+  children: React.ReactNode;
+}) {
+  const [abierta, setAbierta] = useState(activos > 0);
+
+  return (
+    <div className="border-b border-border">
+      <button
+        type="button"
+        onClick={() => setAbierta((a) => !a)}
+        aria-expanded={abierta}
+        className="flex w-full items-center justify-between gap-2 py-3 text-left"
+      >
+        <span className="flex items-center gap-2 font-semibold">
+          {titulo}
+          {activos > 0 && (
+            <span className="rounded-full bg-brand px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+              {activos}
+            </span>
+          )}
+        </span>
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 shrink-0 text-brand transition-transform",
+            abierta && "rotate-180"
+          )}
+        />
+      </button>
+      {abierta && <div className="pb-4">{children}</div>}
+    </div>
+  );
+}
+
 export function FiltrosPanel({
   filtros,
   marcas,
@@ -94,6 +132,18 @@ export function FiltrosPanel({
     router.push(`/autos${params.size > 0 ? `?${params.toString()}` : ""}`);
   }
 
+  // Al filtrar por precio, el que busca por plata quiere ver los autos en
+  // orden de precio: si el orden sigue en el de defecto, pasa a menor precio.
+  function irConPrecio(precioMin?: number, precioMax?: number) {
+    const orden =
+      (precioMin || precioMax) && filtros.orden === "relevancia" ? "precio_asc" : filtros.orden;
+    ir({ ...filtros, precioMin, precioMax, orden });
+  }
+
+  const presetActivo = PRECIO_PRESETS.find(
+    (p) => p.min === filtros.precioMin && p.max === filtros.precioMax
+  );
+
   const modelosDisponibles = modelosParaMarcas(marcas, filtros.marca);
   const anioMinValue = filtros.anioMin ? String(filtros.anioMin) : TODOS;
   const anioMaxValue = filtros.anioMax ? String(filtros.anioMax) : TODOS;
@@ -109,18 +159,18 @@ export function FiltrosPanel({
   for (const km of KM_OPCIONES) itemsKm[String(km)] = `Hasta ${formatMiles(km)} km`;
 
   return (
-    <div className="flex flex-col gap-6 text-sm">
+    <div className="flex flex-col text-sm">
+      <div className="pb-4">
       <BusquedaInput
         key={filtros.q ?? ""}
         valorInicial={filtros.q ?? ""}
         onBuscar={(valor) => ir({ ...filtros, q: valor || undefined })}
       />
+      </div>
+      <div className="border-t border-border">
 
       {marcas.length > 0 && (
-        <fieldset>
-          <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Marca
-          </legend>
+        <Seccion titulo="Marca" activos={filtros.marca.length}>
           <div className="flex flex-col gap-2">
             {marcas.map((m) => (
               <label key={m.marca} className="flex items-center gap-2">
@@ -134,14 +184,11 @@ export function FiltrosPanel({
               </label>
             ))}
           </div>
-        </fieldset>
+        </Seccion>
       )}
 
       {filtros.marca.length > 0 && modelosDisponibles.length > 0 && (
-        <fieldset>
-          <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Modelo
-          </legend>
+        <Seccion titulo="Modelo" activos={filtros.modelo.length}>
           <div className="flex flex-col gap-2">
             {modelosDisponibles.map((m) => (
               <label key={m.modelo} className="flex items-center gap-2">
@@ -155,14 +202,11 @@ export function FiltrosPanel({
               </label>
             ))}
           </div>
-        </fieldset>
+        </Seccion>
       )}
 
       {anios.length > 0 && (
-        <fieldset>
-          <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Año
-          </legend>
+        <Seccion titulo="Año" activos={(filtros.anioMin || filtros.anioMax ? 1 : 0)}>
           <div className="grid grid-cols-2 gap-2">
             <Select
               items={itemsAnioDesde}
@@ -204,49 +248,56 @@ export function FiltrosPanel({
               </SelectContent>
             </Select>
           </div>
-        </fieldset>
+        </Seccion>
       )}
 
-      <fieldset>
-        <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Precio (ARS)
-        </legend>
+      <Seccion
+        titulo="Precio"
+        activos={filtros.precioMin || filtros.precioMax ? 1 : 0}
+      >
+        <div className="flex flex-col gap-1">
+          {PRECIO_PRESETS.map((preset) => {
+            const activo = presetActivo === preset;
+            return (
+              <button
+                key={preset.label}
+                type="button"
+                aria-pressed={activo}
+                onClick={() =>
+                  activo ? irConPrecio(undefined, undefined) : irConPrecio(preset.min, preset.max)
+                }
+                className={cn(
+                  "rounded-lg px-3 py-2 text-left transition-colors",
+                  activo
+                    ? "bg-brand font-semibold text-white"
+                    : "hover:bg-muted"
+                )}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mb-1.5 mt-4 text-xs text-muted-foreground">O elegí tu rango</p>
         <div className="grid grid-cols-2 gap-2">
           <Input
             inputMode="numeric"
             placeholder="Mínimo"
             className="h-9"
-            value={filtros.precioMin ? formatMiles(filtros.precioMin) : ""}
-            onChange={(e) => ir({ ...filtros, precioMin: parseMiles(e.target.value) })}
+            value={!presetActivo && filtros.precioMin ? formatMiles(filtros.precioMin) : ""}
+            onChange={(e) => irConPrecio(parseMiles(e.target.value), filtros.precioMax)}
           />
           <Input
             inputMode="numeric"
             placeholder="Máximo"
             className="h-9"
-            value={filtros.precioMax ? formatMiles(filtros.precioMax) : ""}
-            onChange={(e) => ir({ ...filtros, precioMax: parseMiles(e.target.value) })}
+            value={!presetActivo && filtros.precioMax ? formatMiles(filtros.precioMax) : ""}
+            onChange={(e) => irConPrecio(filtros.precioMin, parseMiles(e.target.value))}
           />
         </div>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {PRECIO_PRESETS.map((preset) => (
-            <button
-              key={preset.label}
-              type="button"
-              onClick={() =>
-                ir({ ...filtros, precioMin: preset.min, precioMax: preset.max })
-              }
-              className="rounded-full border border-border px-2.5 py-1 text-xs hover:border-primary hover:text-primary"
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      </Seccion>
 
-      <fieldset>
-        <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Kilómetros
-        </legend>
+      <Seccion titulo="Kilómetros" activos={(filtros.kmMax ? 1 : 0)}>
         <Select
           items={itemsKm}
           value={filtros.kmMax ? String(filtros.kmMax) : TODOS}
@@ -266,12 +317,9 @@ export function FiltrosPanel({
             ))}
           </SelectContent>
         </Select>
-      </fieldset>
+      </Seccion>
 
-      <fieldset>
-        <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Combustible
-        </legend>
+      <Seccion titulo="Combustible" activos={filtros.combustible.length}>
         <div className="flex flex-col gap-2">
           {COMBUSTIBLES.map((c) => (
             <label key={c} className="flex items-center gap-2">
@@ -285,13 +333,10 @@ export function FiltrosPanel({
             </label>
           ))}
         </div>
-      </fieldset>
+      </Seccion>
 
       {hayTransmision && (
-        <fieldset>
-          <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Transmisión
-          </legend>
+        <Seccion titulo="Transmisión" activos={filtros.transmision.length}>
           <div className="flex flex-col gap-2">
             {TRANSMISIONES.map((t) => (
               <label key={t.value} className="flex items-center gap-2">
@@ -308,14 +353,11 @@ export function FiltrosPanel({
               </label>
             ))}
           </div>
-        </fieldset>
+        </Seccion>
       )}
 
       {hayCarroceria && (
-        <fieldset>
-          <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Carrocería
-          </legend>
+        <Seccion titulo="Carrocería" activos={filtros.carroceria.length}>
           <div className="flex flex-col gap-2">
             {CARROCERIAS.map((c) => (
               <label key={c.value} className="flex items-center gap-2">
@@ -332,11 +374,13 @@ export function FiltrosPanel({
               </label>
             ))}
           </div>
-        </fieldset>
+        </Seccion>
       )}
 
-      <label className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      </div>
+
+      <label className="flex items-center justify-between gap-2 pt-4">
+        <span className="font-semibold">
           Ocultar señados
         </span>
         <Switch
