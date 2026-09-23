@@ -34,7 +34,7 @@ export function AutoCard({ auto }: { auto: AutoCatalogo }) {
           />
         ) : null}
 
-        <div className="absolute left-2 top-2 flex flex-col items-start gap-1.5">
+        <div className="absolute right-2 top-2">
           {auto.disponibilidad === "salon" ? (
             <span className="rounded-full bg-[#16A34A] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
               En salón
@@ -44,6 +44,9 @@ export function AutoCard({ auto }: { auto: AutoCatalogo }) {
               Agendar cita
             </span>
           )}
+        </div>
+
+        <div className="absolute left-2 top-2 flex flex-col gap-1.5">
           {auto.estado === "senado" && (
             <span className="rounded-md bg-brand-black px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Señado

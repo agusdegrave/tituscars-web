@@ -58,28 +58,6 @@ export async function getUltimosIngresos(limite = 12): Promise<AutoCatalogo[]> {
   return data ?? [];
 }
 
-export async function getMarcaModeloPairs(): Promise<
-  { marca: string; modelo: string }[]
-> {
-  const { data } = await supabase.from(TABLA).select("marca, modelo").neq("estado", "senado");
-  const vistos = new Set<string>();
-  const pares: { marca: string; modelo: string }[] = [];
-
-  for (const fila of data ?? []) {
-    const marca = fila.marca as string;
-    const modelo = fila.modelo as string;
-    const clave = `${marca}::${modelo}`;
-    if (!vistos.has(clave)) {
-      vistos.add(clave);
-      pares.push({ marca, modelo });
-    }
-  }
-
-  return pares.sort(
-    (a, b) => a.marca.localeCompare(b.marca) || a.modelo.localeCompare(b.modelo)
-  );
-}
-
 export async function getAnios(): Promise<number[]> {
   const { data } = await supabase.from(TABLA).select("anio").neq("estado", "senado");
   const set = new Set((data ?? []).map((r) => r.anio as number));
