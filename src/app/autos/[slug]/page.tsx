@@ -10,6 +10,7 @@ import { VideoSection } from "@/components/ficha/video";
 import { Confianza } from "@/components/ficha/confianza";
 import { AutoGrid } from "@/components/auto-grid";
 import { JsonLd } from "@/components/json-ld";
+import { BusquedaAMedida } from "@/components/busqueda-a-medida";
 import { DIRECCION_CALLE } from "@/lib/config";
 
 export const revalidate = 60;
@@ -148,6 +149,8 @@ export default async function FichaAutoPage({
       <div className="mt-12">
         <Confianza />
       </div>
+
+      <BusquedaAMedida autoSlug={auto.slug} autoTitulo={`${titulo} ${auto.anio}`} className="mt-12" />
     </div>
   );
 }

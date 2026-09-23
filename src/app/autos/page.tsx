@@ -81,7 +81,7 @@ export default async function CatalogoPage({
                 claveFiltros={claveFiltros}
               />
             ) : (
-              <EstadoVacio textoBusqueda={filtros.q} />
+              <EstadoVacio />
             )}
           </div>
         </div>

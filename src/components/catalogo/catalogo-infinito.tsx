@@ -6,6 +6,7 @@ import { AutoGrid } from "@/components/auto-grid";
 import { cargarMasAutos } from "@/app/autos/acciones";
 import type { Filtros } from "@/lib/filtros";
 import type { AutoCatalogo } from "@/lib/types";
+import { BusquedaAMedida } from "@/components/busqueda-a-medida";
 
 const PREFIJO = "titus:catalogo:";
 const VIGENCIA_MS = 30 * 60 * 1000;
@@ -167,6 +168,9 @@ export function CatalogoInfinito({
           </span>
         )}
       </div>
+
+      {/* Fin del scroll infinito: si no apareció lo que buscaba, lo pide a medida. */}
+      {!hayMas && <BusquedaAMedida className="mx-auto mt-10 max-w-3xl" />}
     </>
   );
 }
