@@ -37,6 +37,31 @@ export function FichaGallery({
     api.on("select", () => setActual(api.selectedScrollSnap() + 1));
   }, [api]);
 
+  // Con el lightbox abierto: la página no scrollea, Esc cierra y las flechas pasan de foto.
+  useEffect(() => {
+    if (!lightboxAbierto) return;
+    const overflowPrevio = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setLightboxAbierto(false);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        api?.scrollPrev();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        api?.scrollNext();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = overflowPrevio;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [lightboxAbierto, api]);
+
   if (ordenadas.length === 0) {
     return (
       <div className="aspect-[4/3] w-full rounded-xl bg-muted" aria-hidden="true" />
@@ -95,8 +120,8 @@ export function FichaGallery({
       )}
 
       {lightboxAbierto && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-black/95">
-          <div className="flex items-center justify-between px-4 py-3 text-white">
+        <div className="fixed inset-x-0 top-0 z-[60] flex h-[100dvh] flex-col bg-black">
+          <div className="flex shrink-0 items-center justify-between px-4 py-3 text-white">
             <span className="text-sm">
               {actual} / {ordenadas.length}
             </span>
@@ -110,16 +135,16 @@ export function FichaGallery({
             </button>
           </div>
 
-          <div className="flex flex-1 items-center px-2 pb-6">
+          <div className="min-h-0 flex-1 px-2 pb-6">
             <Carousel
               setApi={setApi}
               opts={{ align: "center", startIndex: activo, loop: true }}
-              className="w-full"
+              className="h-full w-full [&>[data-slot=carousel-content]]:h-full"
             >
-              <CarouselContent>
+              <CarouselContent className="h-full">
                 {ordenadas.map((foto, i) => (
-                  <CarouselItem key={foto.url + i} className="flex items-center justify-center">
-                    <div className="relative aspect-[4/3] w-full">
+                  <CarouselItem key={foto.url + i} className="h-full">
+                    <div className="relative h-full w-full">
                       <Image
                         src={foto.url}
                         alt={alt}
