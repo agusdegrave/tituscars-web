@@ -26,7 +26,7 @@ export function FeaturedCarousel({
         {autos.map((auto) => (
           <CarouselItem
             key={auto.id}
-            className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+            className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 [&>a]:h-full"
           >
             <AutoCard auto={auto} />
           </CarouselItem>
