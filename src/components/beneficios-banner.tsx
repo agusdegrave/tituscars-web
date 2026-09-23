@@ -9,7 +9,7 @@ const BENEFICIOS = [
   {
     icono: FileCheck,
     titulo: "Garantía escrita",
-    texto: "Respaldo por escrito desde el primer kilómetro.",
+    texto: "Brindamos garantía de caja y motor.",
   },
   {
     icono: Landmark,
@@ -28,7 +28,7 @@ export function BeneficiosBanner() {
     <section className="bg-brand-black py-14 text-white">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-4 lg:grid-cols-4">
         {BENEFICIOS.map(({ icono: Icono, titulo, texto }) => (
-          <div key={titulo} className="flex flex-col items-start gap-3">
+          <div key={titulo} className="flex flex-col items-center gap-3 text-center">
             <Icono className="h-7 w-7 text-brand" />
             <div>
               <p className="font-bold">{titulo}</p>

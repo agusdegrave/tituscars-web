@@ -5,7 +5,7 @@ const ACCESOS = [
   {
     titulo: "Consigná tu auto",
     texto:
-      "Nuestro diferencial: dejanos tu auto en consigna virtual y nosotros nos encargamos de venderlo por vos, sin que te desprendas de él.",
+      "Cobrás limpio el precio que acordamos: nuestra comisión va por encima. Lo publicamos en todos los portales y redes, aceptamos permuta y financiación sin costo para vos, y lo podés seguir usando hasta que aparezca el comprador.",
     href: "/consigna",
     cta: "Quiero consignar",
   },

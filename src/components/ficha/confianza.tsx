@@ -2,7 +2,7 @@ import { ShieldCheck, FileCheck, Wrench } from "lucide-react";
 
 const ITEMS = [
   { icono: Wrench, texto: "Peritaje completo" },
-  { icono: ShieldCheck, texto: "Garantía escrita" },
+  { icono: ShieldCheck, texto: "Garantía de caja y motor" },
   { icono: FileCheck, texto: "Gestoría propia para la transferencia" },
 ];
 

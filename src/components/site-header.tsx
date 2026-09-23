@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,15 +17,20 @@ const NAV_LINKS = [
   { href: "/contacto", label: "Contacto" },
 ];
 
+function esActivo(pathname: string, href: string): boolean {
+  return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function SiteHeader() {
   const [abierto, setAbierto] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 bg-brand">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="shrink-0">
           <Image
-            src="/brand/logo-horizontal.svg"
+            src="/brand/logo-horizontal-blanco.svg"
             alt="Titus Cars"
             width={136}
             height={40}
@@ -38,7 +44,8 @@ export function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+              aria-current={esActivo(pathname, link.href) ? "page" : undefined}
+              className="text-sm font-medium text-white decoration-white decoration-2 underline-offset-8 transition-colors hover:text-white/80 aria-[current=page]:underline"
             >
               {link.label}
             </Link>
@@ -47,6 +54,7 @@ export function SiteHeader() {
 
         <div className="hidden lg:block">
           <Button
+            className="bg-white text-brand hover:bg-white/90"
             nativeButton={false}
             render={
               <a href={linkWhatsapp()} target="_blank" rel="noopener noreferrer" />
@@ -59,7 +67,7 @@ export function SiteHeader() {
         <button
           type="button"
           aria-label="Abrir menú"
-          className="flex h-10 w-10 items-center justify-center lg:hidden"
+          className="flex h-10 w-10 items-center justify-center text-white lg:hidden"
           onClick={() => setAbierto((v) => !v)}
         >
           {abierto ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
