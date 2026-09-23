@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InstagramIcon, YoutubeIcon, TikTokIcon } from "@/components/icons/social-icons";
 import { getTotalEnStock } from "@/lib/autos";
+import { ReelsSeccion } from "@/components/reels-seccion";
 import { AUTOS_VENDIDOS, GOOGLE_PUNTAJE, INSTAGRAM_URL, TIKTOK_URL, YOUTUBE_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -48,6 +49,8 @@ export default async function NosotrosPage() {
           ))}
         </div>
       </section>
+
+      <ReelsSeccion />
 
       <section className="mx-auto max-w-6xl px-4 py-16">
         <h2 className="text-2xl font-bold tracking-tight">Nuestro local</h2>
