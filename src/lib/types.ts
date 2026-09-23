@@ -48,4 +48,5 @@ export interface AutoCatalogo {
   actualizado_en: string;
   foto_principal: string | null;
   fotos: Foto[] | null;
+  disponibilidad: "salon" | "cita";
 }

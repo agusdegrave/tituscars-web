@@ -10,6 +10,7 @@ import { VideoSection } from "@/components/ficha/video";
 import { Confianza } from "@/components/ficha/confianza";
 import { AutoGrid } from "@/components/auto-grid";
 import { JsonLd } from "@/components/json-ld";
+import { DIRECCION_CALLE } from "@/lib/config";
 
 export const revalidate = 60;
 
@@ -107,6 +108,11 @@ export default async function FichaAutoPage({
             <h1 className="text-2xl font-bold uppercase tracking-tight">{titulo}</h1>
             <p className="text-muted-foreground">{auto.anio}</p>
             <p className="mt-2 text-3xl font-black">{precioFormateado}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {auto.disponibilidad === "salon"
+                ? `Disponible en nuestro salón, ${DIRECCION_CALLE}`
+                : "Este auto se ve con cita previa, escribinos para coordinar"}
+            </p>
             {auto.estado === "senado" && (
               <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-brand-black px-2.5 py-1 text-sm font-medium text-white">
                 Este auto está señado. Consultanos por unidades similares.
@@ -118,6 +124,7 @@ export default async function FichaAutoPage({
             titulo={titulo}
             anio={auto.anio}
             precioFormateado={precioFormateado}
+            conCita={auto.disponibilidad === "cita"}
           />
 
           <FichaTecnica auto={auto} />

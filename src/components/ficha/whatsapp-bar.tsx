@@ -4,9 +4,15 @@ import { Share2 } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { toast } from "@/components/ui/toast";
 
-function mensajeConsulta(titulo: string, anio: number, precioFormateado: string) {
+function mensajeConsulta(
+  titulo: string,
+  anio: number,
+  precioFormateado: string,
+  conCita: boolean
+) {
   const url = typeof window !== "undefined" ? window.location.href : "";
-  return `Hola! Consulto por el ${titulo} ${anio} (${precioFormateado}) que vi en la web: ${url}`;
+  const mensaje = `Hola! Consulto por el ${titulo} ${anio} (${precioFormateado}) que vi en la web: ${url}`;
+  return conCita ? `${mensaje} ¿Puedo agendar una cita para verlo?` : mensaje;
 }
 
 function abrirWhatsapp(mensaje: string) {
@@ -38,12 +44,15 @@ export function WhatsappCta({
   titulo,
   anio,
   precioFormateado,
+  conCita,
 }: {
   titulo: string;
   anio: number;
   precioFormateado: string;
+  conCita: boolean;
 }) {
-  const handleWhatsapp = () => abrirWhatsapp(mensajeConsulta(titulo, anio, precioFormateado));
+  const handleWhatsapp = () =>
+    abrirWhatsapp(mensajeConsulta(titulo, anio, precioFormateado, conCita));
   const handleCompartir = () => compartir(titulo);
 
   return (

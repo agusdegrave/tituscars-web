@@ -34,7 +34,16 @@ export function AutoCard({ auto }: { auto: AutoCatalogo }) {
           />
         ) : null}
 
-        <div className="absolute left-2 top-2 flex flex-col gap-1.5">
+        <div className="absolute left-2 top-2 flex flex-col items-start gap-1.5">
+          {auto.disponibilidad === "salon" ? (
+            <span className="rounded-full bg-[#16A34A] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              En salón
+            </span>
+          ) : (
+            <span className="rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              Agendar cita
+            </span>
+          )}
           {auto.estado === "senado" && (
             <span className="rounded-md bg-brand-black px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Señado
