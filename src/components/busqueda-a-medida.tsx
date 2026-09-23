@@ -10,21 +10,36 @@ import { linkWhatsapp } from "@/lib/whatsapp";
 import { formatMiles, formatPrecio, parseMiles } from "@/lib/format";
 
 const PRESUPUESTO_MIN = 5_000_000;
-const PRESUPUESTO_MAX = 100_000_000;
+const PRESUPUESTO_MAX = 50_000_000;
 const PRESUPUESTO_PASO = 500_000;
+
+type Pago = "contado" | "financiado" | "ambos";
+
+const OPCIONES_PAGO: { valor: Pago; label: string; texto: string }[] = [
+  { valor: "contado", label: "Contado", texto: "Contado" },
+  { valor: "financiado", label: "Financiado", texto: "Financiado" },
+  { valor: "ambos", label: "Parte contado, parte financiado", texto: "Parte y parte" },
+];
+
+/**
+ * ninguno: no tocó el presupuesto (no se envía).
+ * valor: eligió o escribió un monto (puede ser mayor al tope de la barra).
+ * tope: dejó la barra en el extremo derecho sin escribir ("Más de $50M").
+ */
+type ModoPresupuesto = "ninguno" | "valor" | "tope";
 
 interface Datos {
   nombre: string;
   celular: string;
   modelos: string;
-  entrega: boolean;
+  /** null = todavía no respondió la pregunta. */
+  entrega: boolean | null;
   entregaModelo: string;
   entregaAnio: string;
   entregaKm: string;
-  financia: boolean;
-  contado: boolean;
-  /** null = el cliente no tocó la barra (sin presupuesto informado). */
-  presupuesto: number | null;
+  pago: Pago | null;
+  modoPresupuesto: ModoPresupuesto;
+  presupuesto: number;
   observaciones: string;
   /** Campo trampa: una persona no lo ve; si viene lleno es un bot. */
   trampa: string;
@@ -34,19 +49,28 @@ const VACIO: Datos = {
   nombre: "",
   celular: "",
   modelos: "",
-  entrega: false,
+  entrega: null,
   entregaModelo: "",
   entregaAnio: "",
   entregaKm: "",
-  financia: false,
-  contado: false,
-  presupuesto: null,
+  pago: null,
+  modoPresupuesto: "ninguno",
+  presupuesto: (PRESUPUESTO_MIN + PRESUPUESTO_MAX) / 2,
   observaciones: "",
   trampa: "",
 };
 
-function textoPresupuesto(valor: number): string {
-  return valor >= PRESUPUESTO_MAX ? "Más de $100M" : formatPrecio(valor, "ARS");
+const TEXTO_TOPE = "Presupuesto: más de $50M.";
+
+/** La barra no puede salir de su rango, aunque el monto escrito sí. */
+function valorBarra(d: Datos): number {
+  if (d.modoPresupuesto === "tope") return PRESUPUESTO_MAX;
+  return Math.min(Math.max(d.presupuesto, PRESUPUESTO_MIN), PRESUPUESTO_MAX);
+}
+
+function observacionesAGuardar(d: Datos): string | null {
+  const partes = [d.modoPresupuesto === "tope" ? TEXTO_TOPE : "", d.observaciones.trim()];
+  return partes.filter(Boolean).join(" ").slice(0, 1000) || null;
 }
 
 function anioValido(texto: string): number | null {
@@ -63,6 +87,7 @@ function construirMensaje(d: Datos, autoTitulo?: string): string {
   const lineas = [`Hola! Soy ${d.nombre.trim()}. Quiero que me busquen un auto a medida.`];
   if (autoTitulo) lineas.push(`Lo pido desde la ficha del ${autoTitulo}.`);
   if (d.modelos.trim()) lineas.push(`Busco: ${d.modelos.trim()}.`);
+  if (d.entrega === false) lineas.push("Entrega vehículo: No.");
   if (d.entrega) {
     const entrego = [
       d.entregaModelo.trim(),
@@ -71,11 +96,15 @@ function construirMensaje(d: Datos, autoTitulo?: string): string {
     ]
       .filter(Boolean)
       .join(", ");
-    lineas.push(`Entrego vehículo${entrego ? `: ${entrego}` : ""}.`);
+    lineas.push(`Entrega vehículo: Sí${entrego ? ` (${entrego})` : ""}.`);
   }
-  const pago = [d.financia && "financiado", d.contado && "contado"].filter(Boolean).join(" y ");
-  if (pago) lineas.push(`Pago: ${pago}.`);
-  if (d.presupuesto !== null) lineas.push(`Presupuesto máximo: ${textoPresupuesto(d.presupuesto)}.`);
+  const pago = OPCIONES_PAGO.find((o) => o.valor === d.pago);
+  if (pago) lineas.push(`Pago: ${pago.texto}.`);
+  if (d.modoPresupuesto === "valor") {
+    lineas.push(`Presupuesto máximo: ${formatPrecio(d.presupuesto, "ARS")}.`);
+  } else if (d.modoPresupuesto === "tope") {
+    lineas.push(TEXTO_TOPE);
+  }
   if (d.observaciones.trim()) lineas.push(`Observaciones: ${d.observaciones.trim()}`);
   lineas.push(`Mi celular: ${d.celular.trim()}`);
   return lineas.join("\n");
@@ -97,6 +126,23 @@ export function BusquedaAMedida({
 
   function set<K extends keyof Datos>(campo: K, valor: Datos[K]) {
     setDatos((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  function moverBarra(valor: number) {
+    setDatos((prev) => ({
+      ...prev,
+      presupuesto: valor,
+      modoPresupuesto: valor >= PRESUPUESTO_MAX ? "tope" : "valor",
+    }));
+  }
+
+  function escribirMonto(texto: string) {
+    const valor = parseMiles(texto);
+    setDatos((prev) =>
+      valor === undefined
+        ? { ...prev, modoPresupuesto: "ninguno" }
+        : { ...prev, presupuesto: Math.min(valor, 999_999_999_999), modoPresupuesto: "valor" }
+    );
   }
 
   const valido = datos.nombre.trim().length >= 2 && datos.celular.trim().length >= 6;
@@ -121,14 +167,14 @@ export function BusquedaAMedida({
       nombre: datos.nombre.trim().slice(0, 80),
       celular: datos.celular.trim().slice(0, 30),
       modelos_buscados: datos.modelos.trim().slice(0, 300) || null,
-      entrega_vehiculo: datos.entrega,
+      entrega_vehiculo: datos.entrega === true,
       entrega_modelo: datos.entrega ? datos.entregaModelo.trim().slice(0, 120) || null : null,
       entrega_anio: datos.entrega ? anioValido(datos.entregaAnio) : null,
       entrega_km: datos.entrega ? kmValido(datos.entregaKm) : null,
-      financia: datos.financia,
-      contado: datos.contado,
-      presupuesto_max: datos.presupuesto,
-      observaciones: datos.observaciones.trim().slice(0, 1000) || null,
+      financia: datos.pago === "financiado" || datos.pago === "ambos",
+      contado: datos.pago === "contado" || datos.pago === "ambos",
+      presupuesto_max: datos.modoPresupuesto === "valor" ? datos.presupuesto : null,
+      observaciones: observacionesAGuardar(datos),
       pagina: `${window.location.pathname}${window.location.search}`.slice(0, 300),
       auto_slug: autoSlug?.slice(0, 200) ?? null,
     });
@@ -232,112 +278,114 @@ export function BusquedaAMedida({
               />
             </div>
 
-            <div className="space-y-4">
-              <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  checked={datos.entrega}
-                  onChange={(e) => set("entrega", e.target.checked)}
-                  className="size-5 cursor-pointer accent-brand"
-                />
-                Entrego vehículo
-              </label>
+            <Pregunta titulo="¿Tenés un vehículo para entregar?">
+              <Pastilla activa={datos.entrega === true} onClick={() => set("entrega", true)}>
+                Sí
+              </Pastilla>
+              <Pastilla activa={datos.entrega === false} onClick={() => set("entrega", false)}>
+                No
+              </Pastilla>
+            </Pregunta>
 
-              {datos.entrega && (
-                <div className="grid grid-cols-1 gap-4 rounded-xl border border-border bg-background p-4 sm:grid-cols-2">
-                  <div className="sm:col-span-2">
-                    <Label htmlFor="bam-entrega-modelo" className="mb-1.5">
-                      Modelo
-                    </Label>
-                    <Input
-                      id="bam-entrega-modelo"
-                      maxLength={120}
-                      placeholder="Ej.: Fiat Cronos 1.3"
-                      value={datos.entregaModelo}
-                      onChange={(e) => set("entregaModelo", e.target.value)}
-                      className="h-10"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bam-entrega-anio" className="mb-1.5">
-                      Año
-                    </Label>
-                    <Input
-                      id="bam-entrega-anio"
-                      inputMode="numeric"
-                      placeholder="2020"
-                      value={datos.entregaAnio}
-                      onChange={(e) =>
-                        set("entregaAnio", e.target.value.replace(/\D/g, "").slice(0, 4))
-                      }
-                      className="h-10"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bam-entrega-km" className="mb-1.5">
-                      Km
-                    </Label>
-                    <Input
-                      id="bam-entrega-km"
-                      inputMode="numeric"
-                      placeholder="80.000"
-                      value={formatMiles(datos.entregaKm)}
-                      onChange={(e) =>
-                        set("entregaKm", String(parseMiles(e.target.value) ?? "").slice(0, 7))
-                      }
-                      className="h-10"
-                    />
-                  </div>
+            {datos.entrega && (
+              <div className="grid grid-cols-1 gap-4 rounded-xl border border-border bg-background p-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Label htmlFor="bam-entrega-modelo" className="mb-1.5">
+                    Modelo
+                  </Label>
+                  <Input
+                    id="bam-entrega-modelo"
+                    maxLength={120}
+                    placeholder="Ej.: Fiat Cronos 1.3"
+                    value={datos.entregaModelo}
+                    onChange={(e) => set("entregaModelo", e.target.value)}
+                    className="h-10"
+                  />
                 </div>
-              )}
-
-              <div className="flex flex-wrap gap-x-6 gap-y-3">
-                <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
-                  <input
-                    type="checkbox"
-                    checked={datos.financia}
-                    onChange={(e) => set("financia", e.target.checked)}
-                    className="size-5 cursor-pointer accent-brand"
+                <div>
+                  <Label htmlFor="bam-entrega-anio" className="mb-1.5">
+                    Año
+                  </Label>
+                  <Input
+                    id="bam-entrega-anio"
+                    inputMode="numeric"
+                    placeholder="2020"
+                    value={datos.entregaAnio}
+                    onChange={(e) =>
+                      set("entregaAnio", e.target.value.replace(/\D/g, "").slice(0, 4))
+                    }
+                    className="h-10"
                   />
-                  Financio
-                </label>
-                <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
-                  <input
-                    type="checkbox"
-                    checked={datos.contado}
-                    onChange={(e) => set("contado", e.target.checked)}
-                    className="size-5 cursor-pointer accent-brand"
+                </div>
+                <div>
+                  <Label htmlFor="bam-entrega-km" className="mb-1.5">
+                    Km
+                  </Label>
+                  <Input
+                    id="bam-entrega-km"
+                    inputMode="numeric"
+                    placeholder="80.000"
+                    value={formatMiles(datos.entregaKm)}
+                    onChange={(e) =>
+                      set("entregaKm", String(parseMiles(e.target.value) ?? "").slice(0, 7))
+                    }
+                    className="h-10"
                   />
-                  Contado
-                </label>
+                </div>
               </div>
-            </div>
+            )}
+
+            <Pregunta titulo="¿Cómo pensás pagarlo?">
+              {OPCIONES_PAGO.map((op) => (
+                <Pastilla
+                  key={op.valor}
+                  activa={datos.pago === op.valor}
+                  onClick={() => set("pago", op.valor)}
+                >
+                  {op.label}
+                </Pastilla>
+              ))}
+            </Pregunta>
 
             <div>
-              <div className="mb-2 flex items-baseline justify-between gap-3">
-                <Label htmlFor="bam-presupuesto">Presupuesto máximo</Label>
-                <span className="text-base font-black">
-                  {datos.presupuesto === null
-                    ? "Mové la barra"
-                    : textoPresupuesto(datos.presupuesto)}
-                </span>
+              <Label htmlFor="bam-presupuesto-monto">Presupuesto máximo</Label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Mové la barra o escribí el monto.
+              </p>
+              <div className="mt-2 flex items-baseline gap-2 text-3xl font-black sm:text-4xl">
+                {datos.modoPresupuesto === "tope" && <span className="shrink-0">Más de</span>}
+                <span className="shrink-0">$</span>
+                <input
+                  id="bam-presupuesto-monto"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="0"
+                  value={datos.modoPresupuesto === "ninguno" ? "" : formatMiles(datos.presupuesto)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => escribirMonto(e.target.value)}
+                  className="w-full min-w-0 bg-transparent outline-none placeholder:text-muted-foreground/50 focus-visible:underline focus-visible:decoration-brand focus-visible:decoration-2 focus-visible:underline-offset-4"
+                />
               </div>
               <input
-                id="bam-presupuesto"
                 type="range"
                 min={PRESUPUESTO_MIN}
                 max={PRESUPUESTO_MAX}
                 step={PRESUPUESTO_PASO}
-                value={datos.presupuesto ?? (PRESUPUESTO_MIN + PRESUPUESTO_MAX) / 2}
-                onChange={(e) => set("presupuesto", Number(e.target.value))}
+                value={valorBarra(datos)}
+                onChange={(e) => moverBarra(Number(e.target.value))}
+                aria-label="Presupuesto máximo"
                 aria-valuetext={
-                  datos.presupuesto === null ? "Sin definir" : textoPresupuesto(datos.presupuesto)
+                  datos.modoPresupuesto === "ninguno"
+                    ? "Sin definir"
+                    : datos.modoPresupuesto === "tope"
+                      ? "Más de $50M"
+                      : formatPrecio(datos.presupuesto, "ARS")
                 }
-                className="w-full cursor-pointer accent-brand"
+                className="mt-3 w-full cursor-pointer accent-brand"
               />
               <div className="mt-1 flex justify-between text-xs text-muted-foreground">
                 <span>$5M</span>
-                <span>Más de $100M</span>
+                <span>+$50M</span>
               </div>
             </div>
 
@@ -368,5 +416,39 @@ export function BusquedaAMedida({
         </>
       )}
     </section>
+  );
+}
+
+function Pregunta({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 text-sm font-medium">{titulo}</legend>
+      <div className="flex flex-wrap gap-2">{children}</div>
+    </fieldset>
+  );
+}
+
+function Pastilla({
+  activa,
+  onClick,
+  children,
+}: {
+  activa: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={activa}
+      onClick={onClick}
+      className={`h-10 rounded-full border px-5 text-sm font-semibold transition-colors ${
+        activa
+          ? "border-brand bg-brand text-white"
+          : "border-border bg-background text-foreground hover:border-brand"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
