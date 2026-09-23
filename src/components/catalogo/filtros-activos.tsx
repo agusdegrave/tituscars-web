@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { X } from "lucide-react";
-import { filtrosAParams, type Filtros } from "@/lib/filtros";
+import { filtrosAParams, PRECIO_PRESETS, type Filtros } from "@/lib/filtros";
 import { formatMiles } from "@/lib/format";
 
 const LABEL_TRANSMISION: Record<string, string> = {
@@ -72,8 +72,12 @@ export function FiltrosActivos({ filtros }: { filtros: Filtros }) {
   }
 
   if (filtros.precioMin || filtros.precioMax) {
-    const label =
-      filtros.precioMin && filtros.precioMax
+    const preset = PRECIO_PRESETS.find(
+      (p) => p.min === filtros.precioMin && p.max === filtros.precioMax
+    );
+    const label = preset
+      ? preset.label
+      : filtros.precioMin && filtros.precioMax
         ? `$ ${formatMiles(filtros.precioMin)} - $ ${formatMiles(filtros.precioMax)}`
         : filtros.precioMin
           ? `Desde $ ${formatMiles(filtros.precioMin)}`

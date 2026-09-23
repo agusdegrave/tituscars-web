@@ -46,6 +46,11 @@ const nextConfig: NextConfig = {
       // /contacto/ tampoco necesita regla: coincide con esta web, mismo caso
       // que /autos/.
 
+      // /vende-tu-auto se sacó (MD-WEB tanda 2): Titus no compra autos, los
+      // toma en permuta o en consigna. Si alguien tiene el link viejo, va a
+      // consigna, que es la opción que más le conviene al que quiere vender.
+      { source: "/vende-tu-auto", destination: "/consigna", permanent: true },
+
       // Cuenta / carrito / checkout de Tienda Nube: no existen acá, a Inicio.
       { source: "/account", destination: "/", permanent: true },
       { source: "/account/:path*", destination: "/", permanent: true },
