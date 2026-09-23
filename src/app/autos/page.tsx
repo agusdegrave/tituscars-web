@@ -63,7 +63,7 @@ export default async function CatalogoPage({
             />
             <OrdenSelect
               filtros={filtros}
-              className="h-10 w-full justify-center border-border bg-background px-2.5 font-medium hover:bg-muted *:data-[slot=select-value]:flex-none"
+              className="w-full justify-center border-border data-[size=default]:h-10 bg-background px-2.5 font-medium hover:bg-muted *:data-[slot=select-value]:flex-none"
             />
           </div>
 
