@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { InstagramIcon, YoutubeIcon, TikTokIcon } from "@/components/icons/social-icons";
 import { getTotalEnStock } from "@/lib/autos";
-import { AUTOS_VENDIDOS, INSTAGRAM_URL, TIKTOK_URL, YOUTUBE_URL } from "@/lib/config";
+import { AUTOS_VENDIDOS, GOOGLE_PUNTAJE, INSTAGRAM_URL, TIKTOK_URL, YOUTUBE_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Nosotros | Titus Cars",
@@ -15,7 +15,7 @@ export default async function NosotrosPage() {
 
   const numeros = [
     { valor: `+${AUTOS_VENDIDOS}`, label: "Autos vendidos" },
-    { valor: "5.0", label: "En Google" },
+    { valor: GOOGLE_PUNTAJE, label: "En Google" },
     { valor: `${enStock}`, label: "Autos en stock" },
   ];
 

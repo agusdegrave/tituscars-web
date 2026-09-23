@@ -44,9 +44,6 @@ export function SiteFooter() {
             <Link href="/autos" className="hover:text-brand">
               Catálogo
             </Link>
-            <Link href="/autos?condicion=0km" className="hover:text-brand">
-              0 KM
-            </Link>
             <Link href="/consigna" className="hover:text-brand">
               Consigná tu auto
             </Link>

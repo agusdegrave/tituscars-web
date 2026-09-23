@@ -11,8 +11,11 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://tituscars.
   ""
 );
 
-// Reseñas de Google (bloque antes del footer y en /nosotros)
-export const RESENAS_CANTIDAD = 100;
+// Reseñas de Google (bloque antes del footer y en /nosotros). Copiar los
+// números tal cual figuran en el perfil de Google (al 23/09/2026: 4,8 con
+// 195 reseñas); no redondear para arriba.
+export const GOOGLE_PUNTAJE = "4,8";
+export const RESENAS_CANTIDAD = 195;
 export const RESENAS_URL = "https://maps.app.goo.gl/Vsu7RQMskAvEWuCm8";
 
 // Redes sociales (footer, /nosotros, /contacto)
@@ -40,7 +43,7 @@ export const HORARIOS_SCHEMA: { dayOfWeek: string[]; opens: string; closes: stri
 ];
 
 // Cantidad de autos vendidos históricos (bloque de números en /nosotros)
-export const AUTOS_VENDIDOS = 100;
+export const AUTOS_VENDIDOS = 400;
 
 // Entidades de financiación (/financiacion): vacío hasta que Agustín pase
 // nombre + logo de cada banco/financiera. La grilla no se muestra si está vacío.
