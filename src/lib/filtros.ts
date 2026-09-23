@@ -14,13 +14,13 @@ export const PRECIO_PRESETS: { label: string; min?: number; max?: number }[] = [
   { label: "Más de $40M", min: 40_000_000, max: undefined },
 ];
 
-export const ORDEN_DEFECTO = "relevancia";
+export const ORDEN_DEFECTO = "recientes";
 
 export const OPCIONES_ORDEN: { value: string; label: string }[] = [
-  { value: "relevancia", label: "Relevancia" },
+  { value: "recientes", label: "Más recientes" },
   { value: "precio_asc", label: "Menor precio" },
   { value: "precio_desc", label: "Mayor precio" },
-  { value: "nuevos", label: "Más nuevos" },
+  { value: "nuevos", label: "Año más nuevo" },
   { value: "km", label: "Menos km" },
 ];
 
@@ -37,7 +37,6 @@ export interface Filtros {
   transmision: string[];
   carroceria: string[];
   condicion?: Condicion;
-  sinSenados: boolean;
   orden: string;
   page: number;
 }
@@ -76,7 +75,6 @@ export function parseFiltros(sp: SearchParamsCatalogo): Filtros {
     transmision: aArray(sp.transmision),
     carroceria: aArray(sp.carroceria),
     condicion: condicionRaw === "usado" || condicionRaw === "0km" ? condicionRaw : undefined,
-    sinSenados: (Array.isArray(sp.sin_senados) ? sp.sin_senados[0] : sp.sin_senados) === "1",
     orden: (Array.isArray(sp.orden) ? sp.orden[0] : sp.orden) || ORDEN_DEFECTO,
     page: Math.max(1, aNumero(sp.page) ?? 1),
   };
@@ -97,7 +95,6 @@ export function filtrosAParams(f: Filtros): URLSearchParams {
   for (const t of f.transmision) p.append("transmision", t);
   for (const c of f.carroceria) p.append("carroceria", c);
   if (f.condicion) p.set("condicion", f.condicion);
-  if (f.sinSenados) p.set("sin_senados", "1");
   if (f.orden && f.orden !== ORDEN_DEFECTO) p.set("orden", f.orden);
   if (f.page && f.page > 1) p.set("page", String(f.page));
 
@@ -111,7 +108,6 @@ export function filtrosVacios(): Filtros {
     combustible: [],
     transmision: [],
     carroceria: [],
-    sinSenados: false,
     orden: ORDEN_DEFECTO,
     page: 1,
   };
@@ -129,7 +125,6 @@ export function contarFiltrosActivos(f: Filtros): number {
   n += f.transmision.length;
   n += f.carroceria.length;
   if (f.condicion) n += 1;
-  if (f.sinSenados) n += 1;
   return n;
 }
 

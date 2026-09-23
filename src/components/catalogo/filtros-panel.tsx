@@ -6,7 +6,6 @@ import { ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { formatMiles, parseMiles } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { filtrosAParams, PRECIO_PRESETS, toggleEnArray, type Filtros } from "@/lib/filtros";
+import { filtrosAParams, ORDEN_DEFECTO, PRECIO_PRESETS, toggleEnArray, type Filtros } from "@/lib/filtros";
 import { modelosParaMarcas, type FacetMarca } from "@/lib/facets";
 
 const COMBUSTIBLES = ["Nafta", "Diesel", "GNC", "Híbrido"];
@@ -136,7 +135,7 @@ export function FiltrosPanel({
   // orden de precio: si el orden sigue en el de defecto, pasa a menor precio.
   function irConPrecio(precioMin?: number, precioMax?: number) {
     const orden =
-      (precioMin || precioMax) && filtros.orden === "relevancia" ? "precio_asc" : filtros.orden;
+      (precioMin || precioMax) && filtros.orden === ORDEN_DEFECTO ? "precio_asc" : filtros.orden;
     ir({ ...filtros, precioMin, precioMax, orden });
   }
 
@@ -159,15 +158,16 @@ export function FiltrosPanel({
   for (const km of KM_OPCIONES) itemsKm[String(km)] = `Hasta ${formatMiles(km)} km`;
 
   return (
-    <div className="flex flex-col text-sm">
-      <div className="pb-4">
-      <BusquedaInput
-        key={filtros.q ?? ""}
-        valorInicial={filtros.q ?? ""}
-        onBuscar={(valor) => ir({ ...filtros, q: valor || undefined })}
-      />
+    // El buscador queda fijo arriba; solo la lista de filtros scrollea debajo.
+    <div className="flex min-h-0 flex-1 flex-col text-sm">
+      <div className="shrink-0 pb-4">
+        <BusquedaInput
+          key={filtros.q ?? ""}
+          valorInicial={filtros.q ?? ""}
+          onBuscar={(valor) => ir({ ...filtros, q: valor || undefined })}
+        />
       </div>
-      <div className="border-t border-border">
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden border-t border-border pr-1">
 
       {marcas.length > 0 && (
         <Seccion titulo="Marca" activos={filtros.marca.length}>
@@ -378,16 +378,6 @@ export function FiltrosPanel({
       )}
 
       </div>
-
-      <label className="flex items-center justify-between gap-2 pt-4">
-        <span className="font-semibold">
-          Ocultar señados
-        </span>
-        <Switch
-          checked={filtros.sinSenados}
-          onCheckedChange={(checked) => ir({ ...filtros, sinSenados: checked })}
-        />
-      </label>
     </div>
   );
 }

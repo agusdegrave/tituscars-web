@@ -5,8 +5,11 @@ import type { FacetRow } from "@/lib/facets";
 
 const TABLA = "catalogo_publico";
 
+// Los señados no se muestran en la web (ni catálogo, ni home, ni ficha, ni
+// sitemap): cada consulta a la vista los excluye con .neq("estado", "senado").
+
 export async function getTotalEnStock(): Promise<number> {
-  const { count } = await supabase.from(TABLA).select("*", { count: "exact", head: true });
+  const { count } = await supabase.from(TABLA).select("*", { count: "exact", head: true }).neq("estado", "senado");
   return count ?? 0;
 }
 
@@ -17,7 +20,7 @@ export interface AutoParaSitemap {
 
 /** Slug + fecha de actualización de cada auto, para el sitemap (tanda 7). */
 export async function getAutosParaSitemap(): Promise<AutoParaSitemap[]> {
-  const { data } = await supabase.from(TABLA).select("slug, actualizado_en");
+  const { data } = await supabase.from(TABLA).select("slug, actualizado_en").neq("estado", "senado");
   return data ?? [];
 }
 
@@ -25,6 +28,7 @@ export async function getDestacados(limite = 8): Promise<AutoCatalogo[]> {
   const { data: destacados } = await supabase
     .from(TABLA)
     .select("*")
+    .neq("estado", "senado")
     .eq("destacado_web", true)
     .order("fecha_ingreso", { ascending: false })
     .limit(limite);
@@ -36,6 +40,7 @@ export async function getDestacados(limite = 8): Promise<AutoCatalogo[]> {
   const { data: recientes } = await supabase
     .from(TABLA)
     .select("*")
+    .neq("estado", "senado")
     .order("fecha_ingreso", { ascending: false })
     .limit(limite);
 
@@ -46,6 +51,7 @@ export async function getUltimosIngresos(limite = 12): Promise<AutoCatalogo[]> {
   const { data } = await supabase
     .from(TABLA)
     .select("*")
+    .neq("estado", "senado")
     .order("fecha_ingreso", { ascending: false })
     .limit(limite);
 
@@ -55,7 +61,7 @@ export async function getUltimosIngresos(limite = 12): Promise<AutoCatalogo[]> {
 export async function getMarcaModeloPairs(): Promise<
   { marca: string; modelo: string }[]
 > {
-  const { data } = await supabase.from(TABLA).select("marca, modelo");
+  const { data } = await supabase.from(TABLA).select("marca, modelo").neq("estado", "senado");
   const vistos = new Set<string>();
   const pares: { marca: string; modelo: string }[] = [];
 
@@ -75,7 +81,7 @@ export async function getMarcaModeloPairs(): Promise<
 }
 
 export async function getAnios(): Promise<number[]> {
-  const { data } = await supabase.from(TABLA).select("anio");
+  const { data } = await supabase.from(TABLA).select("anio").neq("estado", "senado");
   const set = new Set((data ?? []).map((r) => r.anio as number));
   return Array.from(set).sort((a, b) => b - a);
 }
@@ -86,7 +92,7 @@ export interface ResultadoCatalogo {
 }
 
 export async function getAutosPaginados(filtros: Filtros): Promise<ResultadoCatalogo> {
-  let query = supabase.from(TABLA).select("*", { count: "exact" });
+  let query = supabase.from(TABLA).select("*", { count: "exact" }).neq("estado", "senado");
 
   if (filtros.q) {
     const texto = filtros.q.replace(/[,()]/g, " ").trim();
@@ -109,7 +115,6 @@ export async function getAutosPaginados(filtros: Filtros): Promise<ResultadoCata
   if (filtros.transmision.length > 0) query = query.in("transmision", filtros.transmision);
   if (filtros.carroceria.length > 0) query = query.in("carroceria", filtros.carroceria);
   if (filtros.condicion) query = query.eq("condicion", filtros.condicion);
-  if (filtros.sinSenados) query = query.neq("estado", "senado");
 
   switch (filtros.orden) {
     case "precio_asc":
@@ -125,9 +130,8 @@ export async function getAutosPaginados(filtros: Filtros): Promise<ResultadoCata
       query = query.order("km", { ascending: true });
       break;
     default:
-      query = query
-        .order("destacado_web", { ascending: false })
-        .order("fecha_ingreso", { ascending: false });
+      // Por defecto: lo último que se subió primero.
+      query = query.order("fecha_ingreso", { ascending: false });
   }
 
   // Desempate estable: sin esto, autos con el mismo precio/fecha pueden
@@ -144,7 +148,7 @@ export async function getAutosPaginados(filtros: Filtros): Promise<ResultadoCata
 export async function getFacetsBase(): Promise<FacetRow[]> {
   const { data } = await supabase
     .from(TABLA)
-    .select("marca, modelo, combustible, transmision, carroceria");
+    .select("marca, modelo, combustible, transmision, carroceria").neq("estado", "senado");
 
   return data ?? [];
 }
@@ -153,6 +157,7 @@ export async function getAutoPorSlug(slug: string): Promise<AutoCatalogo | null>
   const { data } = await supabase
     .from(TABLA)
     .select("*")
+    .neq("estado", "senado")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -169,6 +174,7 @@ export async function getSimilares(
   const { data: porMarca } = await supabase
     .from(TABLA)
     .select("*")
+    .neq("estado", "senado")
     .eq("marca", auto.marca)
     .neq("id", auto.id)
     .order("fecha_ingreso", { ascending: false })
@@ -183,6 +189,7 @@ export async function getSimilares(
     const { data: porCarroceria } = await supabase
       .from(TABLA)
       .select("*")
+      .neq("estado", "senado")
       .eq("carroceria", auto.carroceria)
       .neq("id", auto.id)
       .order("fecha_ingreso", { ascending: false })
@@ -200,6 +207,7 @@ export async function getSimilares(
     const { data: recientes } = await supabase
       .from(TABLA)
       .select("*")
+      .neq("estado", "senado")
       .neq("id", auto.id)
       .order("fecha_ingreso", { ascending: false })
       .limit(limite + idsUsados.size);
