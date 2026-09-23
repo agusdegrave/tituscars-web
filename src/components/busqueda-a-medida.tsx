@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { linkWhatsapp } from "@/lib/whatsapp";
@@ -235,10 +234,11 @@ export function BusquedaAMedida({
 
             <div className="space-y-4">
               <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm font-medium">
-                <Checkbox
+                <input
+                  type="checkbox"
                   checked={datos.entrega}
-                  onCheckedChange={(v) => set("entrega", v === true)}
-                  className="size-5 bg-background"
+                  onChange={(e) => set("entrega", e.target.checked)}
+                  className="size-5 cursor-pointer accent-brand"
                 />
                 Entrego vehículo
               </label>
@@ -293,18 +293,20 @@ export function BusquedaAMedida({
 
               <div className="flex flex-wrap gap-x-6 gap-y-3">
                 <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={datos.financia}
-                    onCheckedChange={(v) => set("financia", v === true)}
-                    className="size-5 bg-background"
+                    onChange={(e) => set("financia", e.target.checked)}
+                    className="size-5 cursor-pointer accent-brand"
                   />
                   Financio
                 </label>
                 <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={datos.contado}
-                    onCheckedChange={(v) => set("contado", v === true)}
-                    className="size-5 bg-background"
+                    onChange={(e) => set("contado", e.target.checked)}
+                    className="size-5 cursor-pointer accent-brand"
                   />
                   Contado
                 </label>
