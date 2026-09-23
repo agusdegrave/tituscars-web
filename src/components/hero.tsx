@@ -1,15 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { SearchForm } from "@/components/search-form";
 
-export function Hero({
-  pares,
-  anios,
-}: {
-  pares: { marca: string; modelo: string }[];
-  anios: number[];
-}) {
+export function Hero() {
   return (
     <section className="relative flex min-h-[85vh] flex-col justify-end overflow-hidden bg-brand-black px-4 pb-10 pt-32 text-white sm:min-h-[90vh]">
       <Image
@@ -20,28 +13,24 @@ export function Hero({
         sizes="100vw"
         className="object-cover object-center"
       />
-      {/* Oscurece abajo (texto y buscador) y deja ver el local arriba. */}
+      {/* Oscurece abajo (texto) y deja ver el local arriba. */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <div>
-          <h1 className="max-w-2xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            Tu próximo auto está en <span className="text-brand">Titus.</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-lg text-white/70">
-            Usados peritados y con garantía en Córdoba
-          </p>
-          <Button
-            size="lg"
-            className="mt-6 h-12 rounded-full px-6 text-base"
-            render={<Link href="/autos" />}
-            nativeButton={false}
-          >
-            Ver catálogo
-          </Button>
-        </div>
-
-        <SearchForm pares={pares} anios={anios} />
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
+        <h1 className="max-w-2xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+          Tu próximo auto está en <span className="text-brand">Titus.</span>
+        </h1>
+        <p className="mt-4 max-w-xl text-lg text-white/70">
+          Usados peritados y con garantía en Córdoba
+        </p>
+        <Button
+          size="lg"
+          className="mt-6 h-12 rounded-full px-6 text-base"
+          render={<Link href="/autos" />}
+          nativeButton={false}
+        >
+          Ver catálogo
+        </Button>
       </div>
     </section>
   );

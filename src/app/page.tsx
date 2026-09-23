@@ -5,9 +5,8 @@ import { AccesosBlock } from "@/components/accesos-block";
 import { AutoGrid } from "@/components/auto-grid";
 import { JsonLd } from "@/components/json-ld";
 import {
-  getAnios,
   getDestacados,
-  getMarcaModeloPairs,
+  getTotalEnStock,
   getUltimosIngresos,
 } from "@/lib/autos";
 import {
@@ -21,11 +20,10 @@ import {
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [destacados, ultimosIngresos, pares, anios] = await Promise.all([
+  const [destacados, ultimosIngresos, totalEnStock] = await Promise.all([
     getDestacados(8),
     getUltimosIngresos(12),
-    getMarcaModeloPairs(),
-    getAnios(),
+    getTotalEnStock(),
   ]);
 
   const nombreSitio = process.env.NEXT_PUBLIC_SITE_NAME ?? "Titus Cars";
@@ -53,12 +51,12 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <Hero pares={pares} anios={anios} />
+      <Hero />
 
       <section className="mx-auto max-w-6xl px-4 py-16">
         <h2 className="text-2xl font-bold tracking-tight">Destacados</h2>
         <div className="mt-6">
-          <FeaturedCarousel autos={destacados} />
+          <FeaturedCarousel autos={destacados} totalEnStock={totalEnStock} />
         </div>
       </section>
 
