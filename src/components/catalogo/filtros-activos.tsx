@@ -139,14 +139,6 @@ export function FiltrosActivos({ filtros }: { filtros: Filtros }) {
     });
   }
 
-  if (filtros.sinSenados) {
-    chips.push({
-      key: "sin-senados",
-      label: "Sin señados",
-      filtrosSinEsto: { ...filtros, sinSenados: false },
-    });
-  }
-
   if (chips.length === 0) return null;
 
   return (

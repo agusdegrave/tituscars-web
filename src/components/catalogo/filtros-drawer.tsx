@@ -48,7 +48,7 @@ export function FiltrosDrawer({
           <SheetTitle>Filtros</SheetTitle>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-4">
+        <div className="flex min-h-0 flex-1 flex-col px-4 pb-4">
           <FiltrosPanel
             filtros={filtros}
             marcas={marcas}
