@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +12,7 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { FiltrosPanel } from "@/components/catalogo/filtros-panel";
-import { contarFiltrosActivos, type Filtros } from "@/lib/filtros";
+import { contarFiltrosActivos, filtrosAParams, type Filtros } from "@/lib/filtros";
 import type { FacetMarca } from "@/lib/facets";
 
 export function FiltrosDrawer({
@@ -27,15 +28,31 @@ export function FiltrosDrawer({
   hayTransmision: boolean;
   hayCarroceria: boolean;
 }) {
+  const router = useRouter();
   const [abierto, setAbierto] = useState(false);
+  // Los toques se acumulan acá y se aplican juntos con "Ver resultados": si
+  // cada tilde navegara, la lista se re-renderiza mientras el cliente sigue
+  // tocando y el toque siguiente cae en otra fila.
+  const [borrador, setBorrador] = useState<Filtros>(filtros);
   const cantidadActivos = contarFiltrosActivos(filtros);
+
+  function abrir() {
+    setBorrador(filtros);
+    setAbierto(true);
+  }
+
+  function aplicar() {
+    const params = filtrosAParams({ ...borrador, page: 1 });
+    router.push(`/autos${params.size > 0 ? `?${params.toString()}` : ""}`);
+    setAbierto(false);
+  }
 
   return (
     <Sheet open={abierto} onOpenChange={setAbierto}>
       <Button
         variant="outline"
         className="h-10 w-full justify-center gap-2 lg:hidden"
-        onClick={() => setAbierto(true)}
+        onClick={abrir}
       >
         <SlidersHorizontal className="h-4 w-4" />
         Filtros{cantidadActivos > 0 ? ` (${cantidadActivos})` : ""}
@@ -48,7 +65,8 @@ export function FiltrosDrawer({
 
         <div className="flex min-h-0 flex-1 flex-col px-4 pb-4">
           <FiltrosPanel
-            filtros={filtros}
+            filtros={borrador}
+            onCambiar={setBorrador}
             marcas={marcas}
             anios={anios}
             hayTransmision={hayTransmision}
@@ -57,7 +75,7 @@ export function FiltrosDrawer({
         </div>
 
         <SheetFooter>
-          <Button onClick={() => setAbierto(false)} size="lg">
+          <Button onClick={aplicar} size="lg">
             Ver resultados
           </Button>
         </SheetFooter>

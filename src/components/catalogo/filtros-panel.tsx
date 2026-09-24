@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -68,6 +67,29 @@ function BusquedaInput({
   );
 }
 
+/** Opción con tilde: toda la fila es tocable y alta para el dedo. */
+function OpcionTilde({
+  checked,
+  onToggle,
+  children,
+}: {
+  checked: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onToggle}
+        className="size-[18px] shrink-0 cursor-pointer accent-brand"
+      />
+      <span>{children}</span>
+    </label>
+  );
+}
+
 /**
  * Categoría de filtro desplegable (tipo acordeón). Arranca abierta solo si
  * tiene algo elegido, para que el panel se vea corto y ordenado.
@@ -117,16 +139,26 @@ export function FiltrosPanel({
   anios,
   hayTransmision,
   hayCarroceria,
+  onCambiar,
 }: {
   filtros: Filtros;
   marcas: FacetMarca[];
   anios: number[];
   hayTransmision: boolean;
   hayCarroceria: boolean;
+  /**
+   * Panel del celu: cada cambio va a un borrador local y se aplica todo junto
+   * con "Ver resultados". Sin esto (compu), cada cambio navega al instante.
+   */
+  onCambiar?: (nuevo: Filtros) => void;
 }) {
   const router = useRouter();
 
   function ir(nuevo: Filtros) {
+    if (onCambiar) {
+      onCambiar(nuevo);
+      return;
+    }
     const params = filtrosAParams({ ...nuevo, page: 1 });
     router.push(`/autos${params.size > 0 ? `?${params.toString()}` : ""}`);
   }
@@ -162,7 +194,7 @@ export function FiltrosPanel({
     <div className="flex min-h-0 flex-1 flex-col text-sm">
       <div className="shrink-0 pb-4">
         <BusquedaInput
-          key={filtros.q ?? ""}
+          key={onCambiar ? "borrador" : (filtros.q ?? "")}
           valorInicial={filtros.q ?? ""}
           onBuscar={(valor) => ir({ ...filtros, q: valor || undefined })}
         />
@@ -171,17 +203,17 @@ export function FiltrosPanel({
 
       {marcas.length > 0 && (
         <Seccion titulo="Marca" activos={filtros.marca.length}>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {marcas.map((m) => (
-              <label key={m.marca} className="flex items-center gap-2">
-                <Checkbox
-                  checked={filtros.marca.includes(m.marca)}
-                  onCheckedChange={() =>
-                    ir({ ...filtros, marca: toggleEnArray(filtros.marca, m.marca) })
-                  }
-                />
+              <OpcionTilde
+                key={m.marca}
+                checked={filtros.marca.includes(m.marca)}
+                onToggle={() =>
+                  ir({ ...filtros, marca: toggleEnArray(filtros.marca, m.marca) })
+                }
+              >
                 {m.marca} ({m.cantidad})
-              </label>
+              </OpcionTilde>
             ))}
           </div>
         </Seccion>
@@ -189,17 +221,17 @@ export function FiltrosPanel({
 
       {filtros.marca.length > 0 && modelosDisponibles.length > 0 && (
         <Seccion titulo="Modelo" activos={filtros.modelo.length}>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {modelosDisponibles.map((m) => (
-              <label key={m.modelo} className="flex items-center gap-2">
-                <Checkbox
-                  checked={filtros.modelo.includes(m.modelo)}
-                  onCheckedChange={() =>
-                    ir({ ...filtros, modelo: toggleEnArray(filtros.modelo, m.modelo) })
-                  }
-                />
+              <OpcionTilde
+                key={m.modelo}
+                checked={filtros.modelo.includes(m.modelo)}
+                onToggle={() =>
+                  ir({ ...filtros, modelo: toggleEnArray(filtros.modelo, m.modelo) })
+                }
+              >
                 {m.modelo} ({m.cantidad})
-              </label>
+              </OpcionTilde>
             ))}
           </div>
         </Seccion>
@@ -320,37 +352,37 @@ export function FiltrosPanel({
       </Seccion>
 
       <Seccion titulo="Combustible" activos={filtros.combustible.length}>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           {COMBUSTIBLES.map((c) => (
-            <label key={c} className="flex items-center gap-2">
-              <Checkbox
-                checked={filtros.combustible.includes(c)}
-                onCheckedChange={() =>
-                  ir({ ...filtros, combustible: toggleEnArray(filtros.combustible, c) })
-                }
-              />
+            <OpcionTilde
+              key={c}
+              checked={filtros.combustible.includes(c)}
+              onToggle={() =>
+                ir({ ...filtros, combustible: toggleEnArray(filtros.combustible, c) })
+              }
+            >
               {c}
-            </label>
+            </OpcionTilde>
           ))}
         </div>
       </Seccion>
 
       {hayTransmision && (
         <Seccion titulo="Transmisión" activos={filtros.transmision.length}>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {TRANSMISIONES.map((t) => (
-              <label key={t.value} className="flex items-center gap-2">
-                <Checkbox
-                  checked={filtros.transmision.includes(t.value)}
-                  onCheckedChange={() =>
-                    ir({
-                      ...filtros,
-                      transmision: toggleEnArray(filtros.transmision, t.value),
-                    })
-                  }
-                />
+              <OpcionTilde
+                key={t.value}
+                checked={filtros.transmision.includes(t.value)}
+                onToggle={() =>
+                  ir({
+                    ...filtros,
+                    transmision: toggleEnArray(filtros.transmision, t.value),
+                  })
+                }
+              >
                 {t.label}
-              </label>
+              </OpcionTilde>
             ))}
           </div>
         </Seccion>
@@ -358,20 +390,20 @@ export function FiltrosPanel({
 
       {hayCarroceria && (
         <Seccion titulo="Carrocería" activos={filtros.carroceria.length}>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {CARROCERIAS.map((c) => (
-              <label key={c.value} className="flex items-center gap-2">
-                <Checkbox
-                  checked={filtros.carroceria.includes(c.value)}
-                  onCheckedChange={() =>
-                    ir({
-                      ...filtros,
-                      carroceria: toggleEnArray(filtros.carroceria, c.value),
-                    })
-                  }
-                />
+              <OpcionTilde
+                key={c.value}
+                checked={filtros.carroceria.includes(c.value)}
+                onToggle={() =>
+                  ir({
+                    ...filtros,
+                    carroceria: toggleEnArray(filtros.carroceria, c.value),
+                  })
+                }
+              >
                 {c.label}
-              </label>
+              </OpcionTilde>
             ))}
           </div>
         </Seccion>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { linkWhatsapp } from "@/lib/whatsapp";
@@ -24,13 +24,42 @@ function esActivo(pathname: string, href: string): boolean {
 export function SiteHeader() {
   const [abierto, setAbierto] = useState(false);
   const pathname = usePathname();
+  const header = useRef<HTMLElement>(null);
+
+  // Arriba de todo, naranja pleno; al bajar pasa de a poco a translúcido
+  // (opacidad del fondo de 100% a 80% entre 0 y 120 px). Se escribe una
+  // variable CSS una vez por frame, sin re-renderizar ni trabar el scroll.
+  useEffect(() => {
+    const el = header.current;
+    if (!el) return;
+    let frame = 0;
+
+    const actualizar = () => {
+      frame = 0;
+      const avance = Math.min(window.scrollY / 120, 1);
+      el.style.setProperty("--fondo-header", `${100 - avance * 20}%`);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(actualizar);
+    };
+
+    actualizar();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 bg-brand">
+    <header
+      ref={header}
+      className="sticky top-0 z-40 bg-[color-mix(in_srgb,var(--brand)_var(--fondo-header,100%),transparent)] backdrop-blur-md transition-[background-color] duration-300"
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="shrink-0">
           <Image
-            src="/brand/logo-horizontal-blanco.svg"
+            src="/brand/logo-header.svg"
             alt="Titus Cars"
             width={136}
             height={40}

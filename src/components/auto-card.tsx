@@ -36,11 +36,11 @@ export function AutoCard({ auto }: { auto: AutoCatalogo }) {
 
         <div className="absolute right-2 top-2">
           {auto.disponibilidad === "salon" ? (
-            <span className="rounded-full bg-[#16A34A] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+            <span className="rounded-full bg-[#16A34A] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm sm:px-2 sm:py-0.5 sm:text-[10px]">
               En salón
             </span>
           ) : (
-            <span className="rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+            <span className="rounded-full bg-brand px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm sm:px-2 sm:py-0.5 sm:text-[10px]">
               Agendar cita
             </span>
           )}
