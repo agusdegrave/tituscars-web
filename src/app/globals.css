@@ -60,6 +60,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
+  /* Alto del encabezado: lo usan el header y el panel de filtros sticky. */
+  --header-h: 4rem;
   --brand: #ff5500;
   --brand-dark: #e04a00;
   --brand-black: #141414;

@@ -62,7 +62,7 @@ export function SiteHeader() {
       ref={header}
       className="sticky top-0 z-40 bg-[color-mix(in_srgb,var(--brand)_clamp(65%,var(--fondo-header,100%),100%),transparent)] backdrop-blur-md transition-[background-color] duration-300"
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+      <div className="mx-auto flex h-[var(--header-h)] max-w-6xl items-center justify-between px-4">
         <Link href="/" className="shrink-0">
           <Image
             src="/brand/logo-header.svg"

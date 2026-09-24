@@ -53,10 +53,12 @@ export default async function HomePage() {
       <JsonLd data={jsonLd} />
       <Hero />
 
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-2xl font-bold tracking-tight">Destacados</h2>
-        <div className="mt-6">
-          <FeaturedCarousel autos={destacados} totalEnStock={totalEnStock} />
+      <section className="bg-zinc-100">
+        <div className="mx-auto max-w-6xl px-4 py-16">
+          <h2 className="text-2xl font-bold tracking-tight">Destacados</h2>
+          <div className="mt-6">
+            <FeaturedCarousel autos={destacados} totalEnStock={totalEnStock} />
+          </div>
         </div>
       </section>
 

@@ -113,11 +113,14 @@ function construirMensaje(d: Datos, autoTitulo?: string): string {
 export function BusquedaAMedida({
   autoSlug,
   autoTitulo,
+  sobreGris = false,
   className,
 }: {
   /** Si el form está en la ficha de un auto, se guarda de dónde vino el pedido. */
   autoSlug?: string;
   autoTitulo?: string;
+  /** Sobre un fondo gris (catálogo) la tarjeta va blanca para despegarse. */
+  sobreGris?: boolean;
   className?: string;
 }) {
   const [datos, setDatos] = useState<Datos>(VACIO);
@@ -195,7 +198,7 @@ export function BusquedaAMedida({
 
   return (
     <section
-      className={`rounded-2xl bg-brand-light p-6 sm:p-8 ${className ?? ""}`}
+      className={`rounded-2xl p-6 sm:p-8 ${sobreGris ? "border border-zinc-200 bg-white shadow-sm" : "bg-brand-light"} ${className ?? ""}`}
       aria-labelledby="busqueda-a-medida-titulo"
     >
       {listo ? (

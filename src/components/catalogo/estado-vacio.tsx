@@ -17,7 +17,7 @@ export function EstadoVacio() {
         Limpiar filtros
       </Button>
 
-      <BusquedaAMedida className="mt-10 w-full max-w-3xl text-left" />
+      <BusquedaAMedida sobreGris className="mt-10 w-full max-w-3xl text-left" />
     </div>
   );
 }

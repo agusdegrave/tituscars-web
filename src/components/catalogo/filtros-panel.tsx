@@ -78,7 +78,7 @@ function OpcionTilde({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted">
+    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:text-brand">
       <input
         type="checkbox"
         checked={checked}
@@ -111,7 +111,7 @@ function Seccion({
         type="button"
         onClick={() => setAbierta((a) => !a)}
         aria-expanded={abierta}
-        className="flex w-full items-center justify-between gap-2 py-3 text-left"
+        className="flex w-full items-center justify-between gap-2 py-3 text-left transition-colors hover:text-brand"
       >
         <span className="flex items-center gap-2 font-semibold">
           {titulo}
@@ -220,7 +220,7 @@ export function FiltrosPanel({
                   "rounded-lg px-3 py-2 text-left transition-colors",
                   activo
                     ? "bg-brand font-semibold text-white"
-                    : "hover:bg-muted"
+                    : "hover:text-brand"
                 )}
               >
                 {preset.label}

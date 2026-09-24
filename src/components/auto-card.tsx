@@ -21,7 +21,7 @@ export function AutoCard({ auto }: { auto: AutoCatalogo }) {
   return (
     <Link
       href={`/autos/${auto.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-lg"
+      className="group flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
         {auto.foto_principal ? (

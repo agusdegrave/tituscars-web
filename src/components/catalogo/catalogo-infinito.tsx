@@ -170,7 +170,7 @@ export function CatalogoInfinito({
       </div>
 
       {/* Fin del scroll infinito: si no apareció lo que buscaba, lo pide a medida. */}
-      {!hayMas && <BusquedaAMedida className="mx-auto mt-10 max-w-3xl" />}
+      {!hayMas && <BusquedaAMedida sobreGris className="mx-auto mt-10 max-w-3xl" />}
     </>
   );
 }
