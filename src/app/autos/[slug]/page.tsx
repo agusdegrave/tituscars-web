@@ -125,6 +125,9 @@ export default async function FichaAutoPage({
             titulo={titulo}
             anio={auto.anio}
             precioFormateado={precioFormateado}
+            datos={[formatKm(auto.km), auto.combustible, precioFormateado]
+              .filter(Boolean)
+              .join(" · ")}
             conCita={auto.disponibilidad === "cita"}
           />
 

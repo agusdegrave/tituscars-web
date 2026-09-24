@@ -4,15 +4,19 @@ import { Share2 } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { toast } from "@/components/ui/toast";
 
-function mensajeConsulta(
-  titulo: string,
-  anio: number,
-  precioFormateado: string,
-  conCita: boolean
-) {
-  const url = typeof window !== "undefined" ? window.location.href : "";
-  const mensaje = `Hola! Consulto por el ${titulo} ${anio} (${precioFormateado}) que vi en la web: ${url}`;
-  return conCita ? `${mensaje} ¿Puedo agendar una cita para verlo?` : mensaje;
+// Estilo Mercado Libre: el link va solo en su línea para que WhatsApp arme la
+// vista previa con la foto del auto.
+function mensajeConsulta(titulo: string, anio: number, datos: string, conCita: boolean) {
+  const url =
+    typeof window !== "undefined" ? `${window.location.origin}${window.location.pathname}` : "";
+  const lineas = [
+    "Hola, ¿cómo estás? Me interesó este vehículo:",
+    `🚗 ${titulo} ${anio}`,
+    datos,
+    url,
+  ];
+  if (conCita) lineas.push("¿Puedo coordinar una cita para verlo?");
+  return lineas.join("\n");
 }
 
 function abrirWhatsapp(mensaje: string) {
@@ -44,15 +48,17 @@ export function WhatsappCta({
   titulo,
   anio,
   precioFormateado,
+  datos,
   conCita,
 }: {
   titulo: string;
   anio: number;
   precioFormateado: string;
+  /** Línea de datos del mensaje: "127.913 km · Nafta · $ 19.500.000". */
+  datos: string;
   conCita: boolean;
 }) {
-  const handleWhatsapp = () =>
-    abrirWhatsapp(mensajeConsulta(titulo, anio, precioFormateado, conCita));
+  const handleWhatsapp = () => abrirWhatsapp(mensajeConsulta(titulo, anio, datos, conCita));
   const handleCompartir = () => compartir(titulo);
 
   return (

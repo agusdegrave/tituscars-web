@@ -201,6 +201,73 @@ export function FiltrosPanel({
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden border-t border-border pr-1">
 
+      <Seccion
+        titulo="Precio"
+        activos={filtros.precioMin || filtros.precioMax ? 1 : 0}
+      >
+        <div className="flex flex-col gap-1">
+          {PRECIO_PRESETS.map((preset) => {
+            const activo = presetActivo === preset;
+            return (
+              <button
+                key={preset.label}
+                type="button"
+                aria-pressed={activo}
+                onClick={() =>
+                  activo ? irConPrecio(undefined, undefined) : irConPrecio(preset.min, preset.max)
+                }
+                className={cn(
+                  "rounded-lg px-3 py-2 text-left transition-colors",
+                  activo
+                    ? "bg-brand font-semibold text-white"
+                    : "hover:bg-muted"
+                )}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mb-1.5 mt-4 text-xs text-muted-foreground">O elegí tu rango</p>
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            inputMode="numeric"
+            placeholder="Mínimo"
+            className="h-9"
+            value={!presetActivo && filtros.precioMin ? formatMiles(filtros.precioMin) : ""}
+            onChange={(e) => irConPrecio(parseMiles(e.target.value), filtros.precioMax)}
+          />
+          <Input
+            inputMode="numeric"
+            placeholder="Máximo"
+            className="h-9"
+            value={!presetActivo && filtros.precioMax ? formatMiles(filtros.precioMax) : ""}
+            onChange={(e) => irConPrecio(filtros.precioMin, parseMiles(e.target.value))}
+          />
+        </div>
+      </Seccion>
+
+      {hayCarroceria && (
+        <Seccion titulo="Carrocería" activos={filtros.carroceria.length}>
+          <div className="flex flex-col gap-1">
+            {CARROCERIAS.map((c) => (
+              <OpcionTilde
+                key={c.value}
+                checked={filtros.carroceria.includes(c.value)}
+                onToggle={() =>
+                  ir({
+                    ...filtros,
+                    carroceria: toggleEnArray(filtros.carroceria, c.value),
+                  })
+                }
+              >
+                {c.label}
+              </OpcionTilde>
+            ))}
+          </div>
+        </Seccion>
+      )}
+
       {marcas.length > 0 && (
         <Seccion titulo="Marca" activos={filtros.marca.length}>
           <div className="flex flex-col gap-1">
@@ -283,52 +350,6 @@ export function FiltrosPanel({
         </Seccion>
       )}
 
-      <Seccion
-        titulo="Precio"
-        activos={filtros.precioMin || filtros.precioMax ? 1 : 0}
-      >
-        <div className="flex flex-col gap-1">
-          {PRECIO_PRESETS.map((preset) => {
-            const activo = presetActivo === preset;
-            return (
-              <button
-                key={preset.label}
-                type="button"
-                aria-pressed={activo}
-                onClick={() =>
-                  activo ? irConPrecio(undefined, undefined) : irConPrecio(preset.min, preset.max)
-                }
-                className={cn(
-                  "rounded-lg px-3 py-2 text-left transition-colors",
-                  activo
-                    ? "bg-brand font-semibold text-white"
-                    : "hover:bg-muted"
-                )}
-              >
-                {preset.label}
-              </button>
-            );
-          })}
-        </div>
-        <p className="mb-1.5 mt-4 text-xs text-muted-foreground">O elegí tu rango</p>
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            inputMode="numeric"
-            placeholder="Mínimo"
-            className="h-9"
-            value={!presetActivo && filtros.precioMin ? formatMiles(filtros.precioMin) : ""}
-            onChange={(e) => irConPrecio(parseMiles(e.target.value), filtros.precioMax)}
-          />
-          <Input
-            inputMode="numeric"
-            placeholder="Máximo"
-            className="h-9"
-            value={!presetActivo && filtros.precioMax ? formatMiles(filtros.precioMax) : ""}
-            onChange={(e) => irConPrecio(filtros.precioMin, parseMiles(e.target.value))}
-          />
-        </div>
-      </Seccion>
-
       <Seccion titulo="Kilómetros" activos={(filtros.kmMax ? 1 : 0)}>
         <Select
           items={itemsKm}
@@ -382,27 +403,6 @@ export function FiltrosPanel({
                 }
               >
                 {t.label}
-              </OpcionTilde>
-            ))}
-          </div>
-        </Seccion>
-      )}
-
-      {hayCarroceria && (
-        <Seccion titulo="Carrocería" activos={filtros.carroceria.length}>
-          <div className="flex flex-col gap-1">
-            {CARROCERIAS.map((c) => (
-              <OpcionTilde
-                key={c.value}
-                checked={filtros.carroceria.includes(c.value)}
-                onToggle={() =>
-                  ir({
-                    ...filtros,
-                    carroceria: toggleEnArray(filtros.carroceria, c.value),
-                  })
-                }
-              >
-                {c.label}
               </OpcionTilde>
             ))}
           </div>
