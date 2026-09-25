@@ -7,6 +7,7 @@ import { ResenasBanner } from "@/components/resenas-banner";
 import { WhatsappFloatingButton } from "@/components/whatsapp-floating-button";
 import { Toaster } from "@/components/ui/toast";
 import { VersionGuard } from "@/components/version-guard";
+import { SCRIPT_REPORTE_ERRORES } from "@/lib/reporte-errores-script";
 import { SITE_URL } from "@/lib/config";
 
 const geistSans = Geist({
@@ -51,6 +52,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Primero de todo, en ES5: registra errores aunque el bundle no corra. */}
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_REPORTE_ERRORES }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <SiteHeader />
         <main className="flex-1">{children}</main>

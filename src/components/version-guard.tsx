@@ -47,6 +47,10 @@ function esErrorDeChunk(motivo: unknown): boolean {
 
 export function VersionGuard() {
   useEffect(() => {
+    // Si este efecto corre, React hidrató: el script del <head> no reporta
+    // "no-hidrato".
+    (window as Window & { __TITUS_HIDRATO?: boolean }).__TITUS_HIDRATO = true;
+
     try {
       const alVolver = () => {
         if (document.visibilityState === "visible") void chequearVersion();
