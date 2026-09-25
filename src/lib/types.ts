@@ -43,6 +43,8 @@ export interface AutoCatalogo {
   destacado_web: boolean;
   descripcion_items: DescripcionItem[] | null;
   descripcion_extra: string | null;
+  /** Texto de publicación armado en el legajo de gestión (ver lib/descripcion.ts). */
+  publicacion_texto: string | null;
   video_url: string | null;
   fecha_ingreso: string;
   actualizado_en: string;

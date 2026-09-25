@@ -170,7 +170,11 @@ export default async function FichaAutoPage({
       </div>
 
       <div className="mt-12 flex flex-col gap-12">
-        <Descripcion items={auto.descripcion_items} extra={auto.descripcion_extra} />
+        <Descripcion
+          publicacion={auto.publicacion_texto}
+          items={auto.descripcion_items}
+          extra={auto.descripcion_extra}
+        />
         <VideoSection videoUrl={auto.video_url} />
       </div>
 
