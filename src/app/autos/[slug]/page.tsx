@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { getAutoPorSlug, getSimilares } from "@/lib/autos";
+import { notFound, permanentRedirect } from "next/navigation";
+import { getAutoPorSlug, getSimilares, getSlugActualPorSufijo } from "@/lib/autos";
+import type { AutoCatalogo } from "@/lib/types";
 import { formatKm, formatPrecio, tituloAuto } from "@/lib/format";
 import { FichaGallery } from "@/components/ficha/gallery";
 import { FichaTecnica } from "@/components/ficha/ficha-tecnica";
@@ -15,6 +16,23 @@ import { DIRECCION_CALLE } from "@/lib/config";
 
 export const revalidate = 60;
 
+/**
+ * Busca el auto y, si el slug no existe, resuelve antes de renderizar nada:
+ * - si el auto cambió de slug (se editó la versión, el año, etc.), 308 al
+ *   slug actual, a nivel HTTP;
+ * - si no existe más, notFound() (404 con el HTML real de not-found.tsx).
+ * Se llama en generateMetadata y al principio de la página.
+ */
+async function resolverAuto(slug: string): Promise<AutoCatalogo> {
+  const auto = await getAutoPorSlug(slug);
+  if (auto) return auto;
+
+  const slugActual = await getSlugActualPorSufijo(slug);
+  if (slugActual && slugActual !== slug) permanentRedirect(`/autos/${slugActual}`);
+
+  notFound();
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -22,7 +40,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const auto = await getAutoPorSlug(slug);
-
   if (!auto) return {};
 
   const titulo = `${tituloAuto(auto)} ${auto.anio}`;
@@ -53,11 +70,7 @@ export default async function FichaAutoPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const auto = await getAutoPorSlug(slug);
-
-  if (!auto) {
-    notFound();
-  }
+  const auto = await resolverAuto(slug);
 
   const similares = await getSimilares(auto);
   const titulo = tituloAuto(auto);

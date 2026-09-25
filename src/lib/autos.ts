@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { supabase } from "@/lib/supabase";
 import type { AutoCatalogo } from "@/lib/types";
 import { POR_PAGINA, type Filtros } from "@/lib/filtros";
@@ -131,15 +132,82 @@ export async function getFacetsBase(): Promise<FacetRow[]> {
   return data ?? [];
 }
 
-export async function getAutoPorSlug(slug: string): Promise<AutoCatalogo | null> {
+// cache(): generateMetadata y la página de la ficha piden el mismo auto en la
+// misma request; así se consulta una sola vez.
+export const getAutoPorSlug = cache(
+  async (slug: string): Promise<AutoCatalogo | null> => {
+    const { data } = await supabase
+      .from(TABLA)
+      .select("*")
+      .neq("estado", "senado")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    return data;
+  }
+);
+
+/**
+ * Slug actual de un auto a partir de un slug viejo. El slug se arma con
+ * marca + modelo + versión + año + los primeros 6 caracteres del id, así que
+ * si se edita el auto cambia todo menos ese sufijo: se busca el auto cuyo slug
+ * termina igual y cuyo id empieza con él. Solo si hay exactamente uno.
+ */
+export const getSlugActualPorSufijo = cache(
+  async (slugViejo: string): Promise<string | null> => {
+    const sufijo = slugViejo.match(/-([0-9a-f]{6})$/i)?.[1]?.toLowerCase();
+    if (!sufijo) return null;
+
+    const { data } = await supabase
+      .from(TABLA)
+      .select("id, slug")
+      .neq("estado", "senado")
+      .like("slug", `%-${sufijo}`)
+      .limit(2);
+
+    const candidatos = (data ?? []).filter((a) => String(a.id).startsWith(sufijo));
+    return candidatos.length === 1 ? (candidatos[0].slug as string) : null;
+  }
+);
+
+function aSlug(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
+ * Autos para ofrecer en el 404 de una ficha (auto vendido o despublicado). El
+ * auto ya no está en la vista, así que no hay precio para comparar: la marca
+ * y el modelo se sacan del slug viejo. Primero mismo modelo, después misma
+ * marca y, si no alcanza, los últimos ingresos.
+ */
+export async function getSimilaresParaSlug(
+  slugViejo: string,
+  limite = 4
+): Promise<AutoCatalogo[]> {
   const { data } = await supabase
     .from(TABLA)
     .select("*")
     .neq("estado", "senado")
-    .eq("slug", slug)
-    .maybeSingle();
+    .order("fecha_ingreso", { ascending: false });
+  const autos = (data ?? []) as AutoCatalogo[];
 
-  return data;
+  const slug = aSlug(slugViejo);
+  const deLaMarca = autos.filter((a) => slug.startsWith(`${aSlug(a.marca)}-`));
+  const delModelo = deLaMarca.filter((a) =>
+    slug.startsWith(`${aSlug(a.marca)}-${aSlug(a.modelo)}-`)
+  );
+
+  const resultado: AutoCatalogo[] = [];
+  for (const auto of [...delModelo, ...deLaMarca, ...autos]) {
+    if (resultado.length >= limite) break;
+    if (!resultado.some((r) => r.id === auto.id)) resultado.push(auto);
+  }
+  return resultado;
 }
 
 export async function getSimilares(
