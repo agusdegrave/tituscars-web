@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getAutoPorSlug, getSimilares, getSlugActualPorSufijo } from "@/lib/autos";
 import type { AutoCatalogo } from "@/lib/types";
@@ -13,6 +14,7 @@ import { AutoGrid } from "@/components/auto-grid";
 import { JsonLd } from "@/components/json-ld";
 import { BusquedaAMedida } from "@/components/busqueda-a-medida";
 import { DIRECCION_CALLE } from "@/lib/config";
+import { linkWhatsapp, mensajeConsultaAuto } from "@/lib/whatsapp";
 
 export const revalidate = 60;
 
@@ -73,6 +75,13 @@ export default async function FichaAutoPage({
   const auto = await resolverAuto(slug);
 
   const similares = await getSimilares(auto);
+
+  // Link de la ficha con el dominio por el que entró el cliente, para el
+  // mensaje de WhatsApp (el <a href> se arma acá, en el servidor).
+  const encabezados = await headers();
+  const host = encabezados.get("x-forwarded-host") ?? encabezados.get("host") ?? "";
+  const protocolo = encabezados.get("x-forwarded-proto") ?? "https";
+  const urlFicha = `${protocolo}://${host}/autos/${auto.slug}`;
   const titulo = tituloAuto(auto);
   const precioFormateado = formatPrecio(auto.precio, auto.moneda);
   const fotos = auto.fotos && auto.fotos.length > 0
@@ -142,12 +151,18 @@ export default async function FichaAutoPage({
 
           <WhatsappCta
             titulo={titulo}
-            anio={auto.anio}
             precioFormateado={precioFormateado}
-            datos={[formatKm(auto.km), auto.combustible, precioFormateado]
-              .filter(Boolean)
-              .join(" · ")}
-            conCita={auto.disponibilidad === "cita"}
+            hrefWhatsapp={linkWhatsapp(
+              mensajeConsultaAuto({
+                titulo,
+                anio: auto.anio,
+                datos: [formatKm(auto.km), auto.combustible, precioFormateado]
+                  .filter(Boolean)
+                  .join(" · "),
+                url: urlFicha,
+                conCita: auto.disponibilidad === "cita",
+              })
+            )}
           />
 
           <FichaTecnica auto={auto} />
