@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ResenasBanner } from "@/components/resenas-banner";
 import { WhatsappFloatingButton } from "@/components/whatsapp-floating-button";
 import { Toaster } from "@/components/ui/toast";
+import { VersionGuard } from "@/components/version-guard";
 import { SITE_URL } from "@/lib/config";
 
 const geistSans = Geist({
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteFooter />
         <WhatsappFloatingButton />
         <Toaster />
+        <VersionGuard />
       </body>
     </html>
   );

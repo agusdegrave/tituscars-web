@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
+// Versión del build: en Vercel, el commit; en local, la hora del build. Se
+// graba en el bundle (cliente y servidor) y la usa el VersionGuard.
+const BUILD_ID = process.env.VERCEL_GIT_COMMIT_SHA || String(Date.now());
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_BUILD_ID: BUILD_ID,
+  },
   images: {
     // Next 16 solo acepta las calidades de esta lista (por defecto [75]); una
     // que no esté se sirve con la más cercana. 50 es para las miniaturas.
