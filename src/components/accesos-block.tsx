@@ -24,7 +24,7 @@ export function AccesosBlock() {
         {ACCESOS.map((acceso) => (
           <div
             key={acceso.titulo}
-            className="flex flex-col gap-3 rounded-xl border border-border bg-card p-6"
+            className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center md:items-start md:text-left"
           >
             <h3 className="text-lg font-bold">{acceso.titulo}</h3>
             <p className="flex-1 text-sm text-muted-foreground">{acceso.texto}</p>

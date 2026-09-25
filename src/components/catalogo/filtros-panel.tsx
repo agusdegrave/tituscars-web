@@ -36,10 +36,17 @@ export function BusquedaInput({
   id = "filtro-busqueda",
   valorInicial,
   onBuscar,
+  placeholder = "Marca, modelo o versión",
+  sinLabel = false,
+  inputClassName = "h-9",
 }: {
   id?: string;
   valorInicial: string;
   onBuscar: (valor: string) => void;
+  placeholder?: string;
+  /** Sin el "Buscar" arriba (queda solo para lectores de pantalla). */
+  sinLabel?: boolean;
+  inputClassName?: string;
 }) {
   const [busqueda, setBusqueda] = useState(valorInicial);
 
@@ -52,15 +59,15 @@ export function BusquedaInput({
 
   return (
     <div>
-      <Label htmlFor={id} className="mb-1.5 text-xs text-muted-foreground">
+      <Label htmlFor={id} className={sinLabel ? "sr-only" : "mb-1.5 text-xs text-muted-foreground"}>
         Buscar
       </Label>
       <div className="relative">
         <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           id={id}
-          placeholder="Marca, modelo o versión"
-          className="h-9 pl-8"
+          placeholder={placeholder}
+          className={cn("pl-8", inputClassName)}
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />

@@ -2,6 +2,7 @@ import { cache } from "react";
 import { supabase } from "@/lib/supabase";
 import type { AutoCatalogo } from "@/lib/types";
 import { POR_PAGINA, type Filtros } from "@/lib/filtros";
+import { filtroBusqueda } from "@/lib/busqueda";
 import type { FacetRow } from "@/lib/facets";
 
 const TABLA = "catalogo_publico";
@@ -73,15 +74,9 @@ export interface ResultadoCatalogo {
 export async function getAutosPaginados(filtros: Filtros): Promise<ResultadoCatalogo> {
   let query = supabase.from(TABLA).select("*", { count: "exact" }).neq("estado", "senado");
 
-  if (filtros.q) {
-    const texto = filtros.q.replace(/[,()]/g, " ").trim();
-    if (texto) {
-      const patron = `%${texto}%`;
-      query = query.or(
-        `marca.ilike.${patron},modelo.ilike.${patron},version.ilike.${patron}`
-      );
-    }
-  }
+  // Búsqueda flexible sobre la columna `busqueda` (ver lib/busqueda.ts).
+  const busqueda = filtroBusqueda(filtros.q);
+  if (busqueda) query = query.or(busqueda);
 
   if (filtros.marca.length > 0) query = query.in("marca", filtros.marca);
   if (filtros.modelo.length > 0) query = query.in("modelo", filtros.modelo);
