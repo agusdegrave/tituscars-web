@@ -8,13 +8,16 @@ const ITEMS = [
 
 export function Confianza() {
   return (
-    <div className="grid grid-cols-1 gap-3 border-t border-border pt-6 sm:grid-cols-3">
-      {ITEMS.map(({ icono: Icono, texto }) => (
-        <div key={texto} className="flex items-center gap-2.5 text-sm">
-          <Icono className="h-5 w-5 shrink-0 text-primary" />
-          <span>{texto}</span>
-        </div>
-      ))}
+    // Celu: el bloque centrado en la pantalla, con las líneas alineadas entre sí.
+    <div className="border-t border-border pt-6">
+      <div className="mx-auto grid w-fit grid-cols-1 gap-3 md:w-full md:grid-cols-3">
+        {ITEMS.map(({ icono: Icono, texto }) => (
+          <div key={texto} className="flex items-center gap-2.5 text-sm">
+            <Icono className="h-5 w-5 shrink-0 text-primary" />
+            <span>{texto}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

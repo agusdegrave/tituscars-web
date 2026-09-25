@@ -29,7 +29,7 @@ export interface AutoCatalogo {
   modelo: string;
   version: string | null;
   anio: number;
-  km: number;
+  km: number | null;
   color: string | null;
   color_hex: string | null;
   combustible: Combustible | null;

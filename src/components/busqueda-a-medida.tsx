@@ -210,10 +210,13 @@ export function BusquedaAMedida({
         </div>
       ) : (
         <>
-          <h2 id="busqueda-a-medida-titulo" className="text-2xl font-black tracking-tight">
+          <h2
+            id="busqueda-a-medida-titulo"
+            className="text-center text-2xl font-black tracking-tight md:text-left"
+          >
             ¿No encontraste el vehículo que buscás?
           </h2>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-center text-muted-foreground md:text-left">
             Te buscamos tu auto a medida. Dejanos tus preferencias y te lo conseguimos. Sin
             costo, sin compromiso.
           </p>

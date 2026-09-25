@@ -11,18 +11,21 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import type { Foto } from "@/lib/types";
+import { PastillaDisponibilidad } from "@/components/pastilla-disponibilidad";
+import type { AutoCatalogo, Foto } from "@/lib/types";
 
 export function FichaGallery({
   fotos,
   alt,
   senado,
   ceroKm,
+  disponibilidad,
 }: {
   fotos: Foto[];
   alt: string;
   senado: boolean;
   ceroKm: boolean;
+  disponibilidad: AutoCatalogo["disponibilidad"];
 }) {
   const ordenadas = fotos.length > 0 ? [...fotos].sort((a, b) => a.orden - b.orden) : [];
   const [activo, setActivo] = useState(0);
@@ -101,13 +104,18 @@ export function FichaGallery({
                   aria-label={`Ver foto ${i + 1} de ${ordenadas.length} en grande`}
                   className="relative block aspect-[4/3] w-full"
                 >
+                  {/* La primera va con prioridad alta (en Next 16 `priority` está
+                      deprecado: se usa loading + fetchPriority); la anterior y la siguiente
+                      a la actual se piden ya (eager) para que el swipe sea
+                      instantáneo; el resto, lazy. */}
                   <Image
                     src={foto.url}
                     alt={alt}
                     fill
                     sizes="(min-width: 1024px) 60vw, 100vw"
                     className="object-cover"
-                    priority={i === 0}
+                    loading={i === 0 || Math.abs(i - activo) <= 1 ? "eager" : "lazy"}
+                    fetchPriority={i === 0 ? "high" : undefined}
                   />
                 </button>
               </CarouselItem>
@@ -125,6 +133,9 @@ export function FichaGallery({
               0 KM
             </span>
           )}
+        </div>
+        <div className="pointer-events-none absolute right-3 top-3">
+          <PastillaDisponibilidad disponibilidad={disponibilidad} />
         </div>
         {ordenadas.length > 1 && (
           <span className="pointer-events-none absolute bottom-3 right-3 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white">
@@ -147,7 +158,17 @@ export function FichaGallery({
                 i === activo ? "border-primary" : "border-transparent"
               }`}
             >
-              <Image src={foto.url} alt="" fill sizes="80px" className="object-cover" />
+              {/* Miniatura de 80px: se pide chica y en calidad baja. Las
+                  primeras 5 (las que se ven al entrar) sin esperar al lazy. */}
+              <Image
+                src={foto.url}
+                alt=""
+                fill
+                sizes="80px"
+                quality={50}
+                loading={i < 5 ? "eager" : "lazy"}
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

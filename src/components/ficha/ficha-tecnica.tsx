@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Calendar, Gauge, Fuel, Cog, Palette, Car } from "lucide-react";
+import { BadgeCheck, Calendar, Gauge, Fuel, Cog, Car } from "lucide-react";
 import { formatKm } from "@/lib/format";
 import type { AutoCatalogo } from "@/lib/types";
 
@@ -10,8 +10,12 @@ function capitalizar(texto: string): string {
 export function FichaTecnica({ auto }: { auto: AutoCatalogo }) {
   const filas: { icono: ReactNode; etiqueta: string; valor: ReactNode }[] = [
     { icono: <Calendar className="h-5 w-5" />, etiqueta: "Año", valor: auto.anio },
-    { icono: <Gauge className="h-5 w-5" />, etiqueta: "Kilómetros", valor: formatKm(auto.km) },
   ];
+
+  const km = formatKm(auto.km);
+  if (km) {
+    filas.push({ icono: <Gauge className="h-5 w-5" />, etiqueta: "Kilómetros", valor: km });
+  }
 
   if (auto.combustible) {
     filas.push({
@@ -29,24 +33,6 @@ export function FichaTecnica({ auto }: { auto: AutoCatalogo }) {
     });
   }
 
-  if (auto.color) {
-    filas.push({
-      icono: <Palette className="h-5 w-5" />,
-      etiqueta: "Color",
-      valor: (
-        <span className="inline-flex items-center gap-2">
-          {auto.color_hex && (
-            <span
-              className="h-3.5 w-3.5 rounded-full border border-border"
-              style={{ backgroundColor: auto.color_hex }}
-            />
-          )}
-          {auto.color}
-        </span>
-      ),
-    });
-  }
-
   if (auto.carroceria) {
     filas.push({
       icono: <Car className="h-5 w-5" />,
@@ -56,7 +42,7 @@ export function FichaTecnica({ auto }: { auto: AutoCatalogo }) {
   }
 
   filas.push({
-    icono: <Calendar className="h-5 w-5" />,
+    icono: <BadgeCheck className="h-5 w-5" />,
     etiqueta: "Condición",
     valor: auto.condicion === "0km" ? "0 KM" : "Usado",
   });

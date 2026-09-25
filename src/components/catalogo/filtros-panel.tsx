@@ -32,10 +32,12 @@ const CARROCERIAS: { value: string; label: string }[] = [
 const KM_OPCIONES = [50000, 100000, 150000, 200000];
 const TODOS = "__todos__";
 
-function BusquedaInput({
+export function BusquedaInput({
+  id = "filtro-busqueda",
   valorInicial,
   onBuscar,
 }: {
+  id?: string;
   valorInicial: string;
   onBuscar: (valor: string) => void;
 }) {
@@ -50,13 +52,13 @@ function BusquedaInput({
 
   return (
     <div>
-      <Label htmlFor="filtro-busqueda" className="mb-1.5 text-xs text-muted-foreground">
+      <Label htmlFor={id} className="mb-1.5 text-xs text-muted-foreground">
         Buscar
       </Label>
       <div className="relative">
         <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          id="filtro-busqueda"
+          id={id}
           placeholder="Marca, modelo o versión"
           className="h-9 pl-8"
           value={busqueda}
@@ -192,13 +194,15 @@ export function FiltrosPanel({
   return (
     // El buscador queda fijo arriba; solo la lista de filtros scrollea debajo.
     <div className="flex min-h-0 flex-1 flex-col text-sm">
-      <div className="shrink-0 pb-4">
-        <BusquedaInput
-          key={onCambiar ? "borrador" : (filtros.q ?? "")}
-          valorInicial={filtros.q ?? ""}
-          onBuscar={(valor) => ir({ ...filtros, q: valor || undefined })}
-        />
-      </div>
+      {!onCambiar && (
+        <div className="shrink-0 pb-4">
+          <BusquedaInput
+            key={filtros.q ?? ""}
+            valorInicial={filtros.q ?? ""}
+            onBuscar={(valor) => ir({ ...filtros, q: valor || undefined })}
+          />
+        </div>
+      )}
       <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden border-t border-border pr-1">
 
       <Seccion

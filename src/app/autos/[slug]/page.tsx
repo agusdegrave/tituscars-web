@@ -75,11 +75,16 @@ export default async function FichaAutoPage({
     brand: { "@type": "Brand", name: auto.marca },
     model: [auto.modelo, auto.version].filter(Boolean).join(" "),
     vehicleModelDate: String(auto.anio),
-    mileageFromOdometer: {
-      "@type": "QuantitativeValue",
-      value: auto.km,
-      unitCode: "KMT",
-    },
+    // Datos estructurados para buscadores: km real (el redondeo es solo visual).
+    ...(auto.km !== null
+      ? {
+          mileageFromOdometer: {
+            "@type": "QuantitativeValue",
+            value: auto.km,
+            unitCode: "KMT",
+          },
+        }
+      : {}),
     ...(auto.foto_principal ? { image: auto.foto_principal } : {}),
     offers: {
       "@type": "Offer",
@@ -101,6 +106,7 @@ export default async function FichaAutoPage({
             alt={titulo}
             senado={auto.estado === "senado"}
             ceroKm={auto.condicion === "0km"}
+            disponibilidad={auto.disponibilidad}
           />
         </div>
 

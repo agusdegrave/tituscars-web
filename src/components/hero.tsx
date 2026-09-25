@@ -9,7 +9,8 @@ export function Hero() {
         src="/brand/local-frente.webp"
         alt="Frente del local de Titus Cars en Córdoba"
         fill
-        priority
+        loading="eager"
+        fetchPriority="high"
         sizes="100vw"
         className="object-cover object-center"
       />

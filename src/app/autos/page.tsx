@@ -4,6 +4,7 @@ import { FiltrosActivos } from "@/components/catalogo/filtros-activos";
 import { CondicionTabs } from "@/components/catalogo/condicion-tabs";
 import { OrdenSelect } from "@/components/catalogo/orden-select";
 import { CatalogoInfinito } from "@/components/catalogo/catalogo-infinito";
+import { BuscadorCelu } from "@/components/catalogo/buscador-celu";
 import { EstadoVacio } from "@/components/catalogo/estado-vacio";
 import { getAnios, getAutosPaginados, getFacetsBase } from "@/lib/autos";
 import { calcularFacets } from "@/lib/facets";
@@ -58,8 +59,11 @@ export default async function CatalogoPage({
               </div>
             </div>
 
-            {/* Celu: Filtros y orden en la misma fila, mitad y mitad. */}
-            <div className="mb-5 mt-6 grid grid-cols-2 gap-2 lg:hidden">
+            {/* Celu: buscador a todo el ancho y, debajo, Filtros y orden mitad y mitad. */}
+            <div className="mt-5 lg:hidden">
+              <BuscadorCelu filtros={filtros} />
+            </div>
+            <div className="mb-5 mt-3 grid grid-cols-2 gap-2 lg:hidden">
               <FiltrosDrawer
                 filtros={filtros}
                 marcas={marcas}

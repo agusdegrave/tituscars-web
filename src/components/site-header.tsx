@@ -69,7 +69,7 @@ export function SiteHeader() {
             alt="Titus Cars"
             width={136}
             height={40}
-            priority
+            loading="eager"
             className="h-8 w-auto lg:h-10"
           />
         </Link>

@@ -55,7 +55,7 @@ export default async function HomePage() {
 
       <section className="bg-zinc-100">
         <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-2xl font-bold tracking-tight">Destacados</h2>
+          <h2 className="text-center text-2xl font-bold tracking-tight md:text-left">Destacados</h2>
           <div className="mt-6">
             <FeaturedCarousel autos={destacados} totalEnStock={totalEnStock} />
           </div>
@@ -67,7 +67,9 @@ export default async function HomePage() {
       <AccesosBlock />
 
       <section className="mx-auto max-w-6xl px-4 pb-20">
-        <h2 className="text-2xl font-bold tracking-tight">Últimos ingresos</h2>
+        <h2 className="text-center text-2xl font-bold tracking-tight md:text-left">
+          Últimos ingresos
+        </h2>
         <div className="mt-6">
           <AutoGrid autos={ultimosIngresos} />
         </div>

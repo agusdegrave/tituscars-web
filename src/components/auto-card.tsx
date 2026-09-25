@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatKm, formatPrecio, tituloAuto } from "@/lib/format";
+import { PastillaDisponibilidad } from "@/components/pastilla-disponibilidad";
 import type { AutoCatalogo } from "@/lib/types";
 
 function lineaDatos(auto: AutoCatalogo): string {
   const partes = [
     String(auto.anio),
-    `${formatKm(auto.km)}`,
+    formatKm(auto.km),
     auto.combustible,
     auto.transmision === "manual"
       ? "Manual"
@@ -35,15 +36,7 @@ export function AutoCard({ auto }: { auto: AutoCatalogo }) {
         ) : null}
 
         <div className="absolute right-2 top-2">
-          {auto.disponibilidad === "salon" ? (
-            <span className="rounded-full bg-[#16A34A] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm sm:px-2 sm:py-0.5 sm:text-[10px]">
-              En salón
-            </span>
-          ) : (
-            <span className="rounded-full bg-brand px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm sm:px-2 sm:py-0.5 sm:text-[10px]">
-              Agendar cita
-            </span>
-          )}
+          <PastillaDisponibilidad disponibilidad={auto.disponibilidad} chicaDesdeSm />
         </div>
 
         <div className="absolute left-2 top-2 flex flex-col gap-1.5">

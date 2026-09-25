@@ -9,8 +9,15 @@ export function formatPrecio(precio: number, moneda: Moneda): string {
   return `$ ${numeroAR.format(precio)}`;
 }
 
-export function formatKm(km: number): string {
-  return `${numeroAR.format(km)} km`;
+/**
+ * Km para mostrar (solo visual; filtros y orden usan el valor real): menos de
+ * 1000 va exacto, desde 1000 se redondea a miles (120.933 → "121.000 km").
+ * Sin km no se muestra nada.
+ */
+export function formatKm(km: number | null | undefined): string | null {
+  if (km === null || km === undefined) return null;
+  const redondeado = km < 1000 ? km : Math.round(km / 1000) * 1000;
+  return `${numeroAR.format(redondeado)} km`;
 }
 
 export function formatMiles(valor: number | string): string {
