@@ -53,39 +53,21 @@ declare global {
 }
 
 /**
- * Código base del Pixel, pero idempotente de punta a punta: si fbq ya existe
- * no hace nada, así el init nunca corre dos veces (lo llaman el <Script> del
- * layout y track(), el que llegue primero).
+ * Código base OFICIAL de Meta, tal cual (crea window.fbq, carga fbevents.js,
+ * init y el PageView de la carga). Va como <script> en el <head> del layout,
+ * así window.fbq existe antes de la hidratación y ningún evento que se
+ * dispare al entrar (ViewContent) se pierde.
  */
-export const SNIPPET_PIXEL = (id: string) => `(function(f,b,e,v){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];var t=b.createElement(e);t.async=!0;t.src=v;var s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s);n('init','${id}');})(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');`;
+export const SNIPPET_PIXEL = (id: string) =>
+  `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${id}');fbq('track','PageView');`;
 
-/** Lo mismo que SNIPPET_PIXEL, para cuando track() llega antes que el <Script>. */
+/** El fbq del snippet oficial (sin stub propio). null si no hay Pixel. */
 function fbq(): Fbq | null {
   if (!PIXEL_ID || typeof window === "undefined") return null;
-  if (window.fbq) return window.fbq;
-  try {
-    const n: Fbq = (...args: unknown[]) => {
-      if (n.callMethod) n.callMethod(...args);
-      else n.queue?.push(args);
-    };
-    window.fbq = n;
-    if (!window._fbq) window._fbq = n;
-    n.push = n;
-    n.loaded = true;
-    n.version = "2.0";
-    n.queue = [];
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://connect.facebook.net/en_US/fbevents.js";
-    document.head.appendChild(script);
-    n("init", PIXEL_ID);
-    return n;
-  } catch {
-    return null;
-  }
+  return window.fbq ?? null;
 }
 
-/** PageView del Pixel (sólo navegador; no va a la Conversions API). */
+/** PageView del Pixel en una navegación del App Router (la de la carga la manda el snippet). */
 export function pageView() {
   try {
     fbq()?.("track", "PageView");

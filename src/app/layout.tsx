@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toast";
 import { VersionGuard } from "@/components/version-guard";
 import { MetaPixel } from "@/components/tracking/meta-pixel";
 import { SCRIPT_REPORTE_ERRORES } from "@/lib/reporte-errores-script";
+import { PIXEL_ID, SNIPPET_PIXEL } from "@/lib/tracking";
 import { SITE_URL } from "@/lib/config";
 
 const geistSans = Geist({
@@ -56,6 +57,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* Primero de todo, en ES5: registra errores aunque el bundle no corra. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_REPORTE_ERRORES }} />
+        {/* Meta Pixel: snippet oficial, antes de la hidratación. */}
+        {PIXEL_ID && <script dangerouslySetInnerHTML={{ __html: SNIPPET_PIXEL(PIXEL_ID) }} />}
       </head>
       <body className="flex min-h-full flex-col">
         <SiteHeader />
