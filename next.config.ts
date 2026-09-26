@@ -35,14 +35,12 @@ const nextConfig: NextConfig = {
     // con barra sería una regla muerta que nunca se llega a evaluar.
     //
     // /autos/ no necesita regla: ya coincide con esta web.
+    //
+    // Las URLs de Tienda Nube que llevan query (/productos, /search, carrito,
+    // cuenta, etc.) NO van acá: estas reglas le pasan al destino toda la query
+    // de la request, sin forma de sacarla ni de renombrar un parámetro. Esas
+    // las resuelve src/proxy.ts (MD-WEB tanda 25).
     return [
-      // Catálogo viejo: /productos/ (listado) y /productos/<slug>/ (ficha).
-      // Las fichas viejas no se pueden mapear 1 a 1 a un slug nuevo, así que
-      // todas van al catálogo. `:path*` cubre /productos, /productos/algo y
-      // cualquier variante anidada.
-      { source: "/productos", destination: "/autos", permanent: true },
-      { source: "/productos/:path*", destination: "/autos", permanent: true },
-
       // Filtros por carrocería de Tienda Nube -> el mismo filtro acá.
       { source: "/camionetas", destination: "/autos?carroceria=camioneta", permanent: true },
       { source: "/suv", destination: "/autos?carroceria=suv", permanent: true },
@@ -60,13 +58,6 @@ const nextConfig: NextConfig = {
       // toma en permuta o en consigna. Si alguien tiene el link viejo, va a
       // consigna, que es la opción que más le conviene al que quiere vender.
       { source: "/vende-tu-auto", destination: "/consigna", permanent: true },
-
-      // Cuenta / carrito / checkout de Tienda Nube: no existen acá, a Inicio.
-      { source: "/account", destination: "/", permanent: true },
-      { source: "/account/:path*", destination: "/", permanent: true },
-      { source: "/comprar", destination: "/", permanent: true },
-      { source: "/checkout", destination: "/", permanent: true },
-      { source: "/checkout/:path*", destination: "/", permanent: true },
     ];
   },
 };

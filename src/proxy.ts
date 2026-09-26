@@ -1,6 +1,41 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
+ * URLs viejas de Tienda Nube (tituscars.com apuntaba ahí): 308 a lo
+ * equivalente acá, SIN arrastrar la query de Tienda Nube (variant, utm, page,
+ * sort_by...). Sólo /search conserva ?q=, que es la búsqueda del catálogo.
+ * Van acá y no en next.config porque los redirects de next.config pasan toda
+ * la query al destino sin poder filtrarla.
+ */
+const TIENDA_NUBE: { prefijo: string; destino: string; conQ?: boolean }[] = [
+  { prefijo: "/productos", destino: "/autos" },
+  { prefijo: "/search", destino: "/autos", conQ: true },
+  { prefijo: "/categorias", destino: "/autos" },
+  { prefijo: "/categoria", destino: "/autos" },
+  { prefijo: "/comprar", destino: "/autos" },
+  { prefijo: "/carrito", destino: "/autos" },
+  { prefijo: "/cart", destino: "/autos" },
+  { prefijo: "/checkout", destino: "/autos" },
+  { prefijo: "/account", destino: "/" },
+  { prefijo: "/mi-cuenta", destino: "/" },
+];
+
+function redireccionTiendaNube(request: NextRequest): NextResponse | null {
+  const { pathname, searchParams } = request.nextUrl;
+  const regla = TIENDA_NUBE.find(
+    (r) => pathname === r.prefijo || pathname.startsWith(`${r.prefijo}/`)
+  );
+  if (!regla) return null;
+
+  const destino = request.nextUrl.clone();
+  destino.pathname = regla.destino;
+  destino.search = "";
+  const q = regla.conQ ? searchParams.get("q")?.trim() : "";
+  if (q) destino.searchParams.set("q", q);
+  return NextResponse.redirect(destino, 308);
+}
+
+/**
  * Fichas de auto (/autos/:slug), resueltas antes de renderizar:
  * - slug que existe: sigue a la página normal;
  * - slug viejo (se editó el auto: cambia marca/modelo/versión/año pero no los
@@ -41,6 +76,9 @@ async function slugsVigentes(forzar: boolean): Promise<AutoSlug[] | null> {
 }
 
 export async function proxy(request: NextRequest) {
+  const tiendaNube = redireccionTiendaNube(request);
+  if (tiendaNube) return tiendaNube;
+
   const slug = decodeURIComponent(request.nextUrl.pathname.split("/")[2] ?? "");
   const headers = new Headers(request.headers);
   headers.set("x-ficha-slug", slug.slice(0, 200));
@@ -70,5 +108,24 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/autos/:slug",
+  matcher: [
+    "/autos/:slug",
+    "/productos",
+    "/productos/:path*",
+    "/search",
+    "/search/:path*",
+    "/categorias",
+    "/categorias/:path*",
+    "/categoria",
+    "/categoria/:path*",
+    "/comprar",
+    "/carrito",
+    "/cart",
+    "/checkout",
+    "/checkout/:path*",
+    "/account",
+    "/account/:path*",
+    "/mi-cuenta",
+    "/mi-cuenta/:path*",
+  ],
 };
