@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/hero";
 import { FeaturedCarousel } from "@/components/featured-carousel";
 import { BeneficiosBanner } from "@/components/beneficios-banner";
@@ -18,6 +19,10 @@ import {
 } from "@/lib/config";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/` },
+};
 
 export default async function HomePage() {
   const [destacados, ultimosIngresos, totalEnStock] = await Promise.all([

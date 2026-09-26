@@ -4,9 +4,10 @@ import { HeroOscuro } from "@/components/institucional/hero-oscuro";
 import { PasosNumerados } from "@/components/institucional/pasos-numerados";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { linkWhatsapp } from "@/lib/whatsapp";
-import { ENTIDADES } from "@/lib/config";
+import { ENTIDADES, SITE_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/financiacion` },
   title: "Financiación | Titus Cars",
   description: "Financiá tu próximo auto en Córdoba: trabajamos con bancos y financieras para que pagues en cuotas.",
 };

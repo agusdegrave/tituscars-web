@@ -13,7 +13,7 @@ import { Confianza } from "@/components/ficha/confianza";
 import { AutoGrid } from "@/components/auto-grid";
 import { JsonLd } from "@/components/json-ld";
 import { BusquedaAMedida } from "@/components/busqueda-a-medida";
-import { DIRECCION_CALLE } from "@/lib/config";
+import { DIRECCION_CALLE, SITE_URL } from "@/lib/config";
 import { linkWhatsapp, mensajeConsultaAuto } from "@/lib/whatsapp";
 
 export const revalidate = 60;
@@ -57,6 +57,7 @@ export async function generateMetadata({
   return {
     title: `${titulo} | Titus Cars`,
     description: descripcion,
+    alternates: { canonical: `${SITE_URL}/autos/${auto.slug}` },
     openGraph: {
       title: `${titulo} | Titus Cars`,
       description: descripcion,

@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { FiltrosPanel } from "@/components/catalogo/filtros-panel";
+import { SITE_URL } from "@/lib/config";
 import { FiltrosDrawer } from "@/components/catalogo/filtros-drawer";
 import { FiltrosActivos } from "@/components/catalogo/filtros-activos";
 import { CondicionTabs } from "@/components/catalogo/condicion-tabs";
@@ -15,6 +17,12 @@ import {
 } from "@/lib/filtros";
 
 export const revalidate = 60;
+
+// Siempre /autos, sin query: filtros, búsqueda y orden son la misma página
+// para Google.
+export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/autos` },
+};
 
 export default async function CatalogoPage({
   searchParams,

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/config";
 import { HeroOscuro } from "@/components/institucional/hero-oscuro";
 import { PasosNumerados } from "@/components/institucional/pasos-numerados";
 import { CotizacionForm } from "@/components/institucional/cotizacion-form";
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/consigna` },
   title: "Consigná tu auto | Titus Cars",
   description:
     "Consigna virtual o física en Córdoba: peritamos, publicamos y vendemos tu auto sin que te desprendas de él.",

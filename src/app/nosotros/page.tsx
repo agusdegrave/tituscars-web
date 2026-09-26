@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { InstagramIcon, YoutubeIcon, TikTokIcon } from "@/components/icons/social-icons";
 import { getTotalEnStock } from "@/lib/autos";
 import { ReelsSeccion } from "@/components/reels-seccion";
-import { AUTOS_VENDIDOS, GOOGLE_PUNTAJE, INSTAGRAM_URL, TIKTOK_URL, YOUTUBE_URL } from "@/lib/config";
+import { AUTOS_VENDIDOS, GOOGLE_PUNTAJE, INSTAGRAM_URL, SITE_URL, TIKTOK_URL, YOUTUBE_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/nosotros` },
   title: "Nosotros | Titus Cars",
   description: "Quiénes somos: agencia de autos usados peritados en Córdoba, con consigna virtual como diferencial.",
 };

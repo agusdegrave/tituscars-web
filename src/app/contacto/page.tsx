@@ -8,10 +8,12 @@ import {
   INSTAGRAM_URL,
   RESENAS_URL,
   DIRECCION,
+  SITE_URL,
   TELEFONO_DISPLAY,
 } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/contacto` },
   title: "Contacto | Titus Cars",
   description: "Dirección, WhatsApp y horarios de Titus Cars en Córdoba.",
 };
