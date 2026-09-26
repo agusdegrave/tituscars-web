@@ -16,6 +16,7 @@ import { formatMiles, parseMiles } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { filtrosAParams, ORDEN_DEFECTO, PRECIO_PRESETS, toggleEnArray, type Filtros } from "@/lib/filtros";
 import { modelosParaMarcas, type FacetMarca } from "@/lib/facets";
+import { track } from "@/lib/tracking";
 
 const COMBUSTIBLES = ["Nafta", "Diesel", "GNC", "Híbrido"];
 const TRANSMISIONES: { value: string; label: string }[] = [
@@ -52,7 +53,11 @@ export function BusquedaInput({
 
   useEffect(() => {
     if (busqueda === valorInicial) return;
-    const timeout = setTimeout(() => onBuscar(busqueda), 300);
+    const timeout = setTimeout(() => {
+      onBuscar(busqueda);
+      const q = busqueda.trim();
+      if (q.length >= 2) track("busqueda", { q });
+    }, 300);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [busqueda]);

@@ -12,6 +12,7 @@ import { VideoSection } from "@/components/ficha/video";
 import { Confianza } from "@/components/ficha/confianza";
 import { AutoGrid } from "@/components/auto-grid";
 import { JsonLd } from "@/components/json-ld";
+import { TrackAlMontar } from "@/components/tracking/track-al-montar";
 import { BusquedaAMedida } from "@/components/busqueda-a-medida";
 import { DIRECCION_CALLE, SITE_URL } from "@/lib/config";
 import { linkWhatsapp, mensajeConsultaAuto } from "@/lib/whatsapp";
@@ -121,6 +122,10 @@ export default async function FichaAutoPage({
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 pb-28 sm:pb-8">
       <JsonLd data={jsonLd} />
+      <TrackAlMontar
+        tipo="vista_auto"
+        datos={{ auto_id: auto.id, slug: auto.slug, valor: auto.precio_ars }}
+      />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
         <div className="lg:col-span-3">
@@ -152,6 +157,7 @@ export default async function FichaAutoPage({
 
           <WhatsappCta
             titulo={titulo}
+            trackAuto={{ auto_id: auto.id, slug: auto.slug, valor: auto.precio_ars }}
             precioFormateado={precioFormateado}
             hrefWhatsapp={linkWhatsapp(
               mensajeConsultaAuto({

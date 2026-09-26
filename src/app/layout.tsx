@@ -7,6 +7,7 @@ import { ResenasBanner } from "@/components/resenas-banner";
 import { WhatsappFloatingButton } from "@/components/whatsapp-floating-button";
 import { Toaster } from "@/components/ui/toast";
 import { VersionGuard } from "@/components/version-guard";
+import { MetaPixel } from "@/components/tracking/meta-pixel";
 import { SCRIPT_REPORTE_ERRORES } from "@/lib/reporte-errores-script";
 import { SITE_URL } from "@/lib/config";
 
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <WhatsappFloatingButton />
         <Toaster />
         <VersionGuard />
+        <MetaPixel />
       </body>
     </html>
   );

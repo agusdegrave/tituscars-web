@@ -3,6 +3,7 @@
 import { Share2 } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { toast } from "@/components/ui/toast";
+import { track } from "@/lib/tracking";
 
 async function compartir(titulo: string) {
   const url = window.location.href;
@@ -28,18 +29,30 @@ export function WhatsappCta({
   titulo,
   precioFormateado,
   hrefWhatsapp,
+  trackAuto,
 }: {
   titulo: string;
   precioFormateado: string;
   hrefWhatsapp: string;
+  /** Datos del auto para el click_whatsapp / Lead (los lee MetaPixel del link). */
+  trackAuto: { auto_id: string; slug: string; valor: number };
 }) {
-  const handleCompartir = () => compartir(titulo);
+  const handleCompartir = () => {
+    track("compartir", { auto_id: trackAuto.auto_id, slug: trackAuto.slug });
+    void compartir(titulo);
+  };
+  const datosTrack = {
+    "data-track-auto-id": trackAuto.auto_id,
+    "data-track-slug": trackAuto.slug,
+    "data-track-valor": String(trackAuto.valor),
+  };
 
   return (
     <>
       <div className="flex gap-2">
         <a
           href={hrefWhatsapp}
+          {...datosTrack}
           target="_blank"
           rel="noopener noreferrer"
           className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#25D366] text-base font-semibold text-white transition-opacity hover:opacity-90"
@@ -61,6 +74,7 @@ export function WhatsappCta({
         <span className="text-lg font-black">{precioFormateado}</span>
         <a
           href={hrefWhatsapp}
+          {...datosTrack}
           target="_blank"
           rel="noopener noreferrer"
           className="flex h-11 flex-1 max-w-[65%] items-center justify-center gap-2 rounded-lg bg-[#25D366] text-sm font-semibold text-white"

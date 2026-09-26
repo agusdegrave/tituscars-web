@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { linkWhatsapp } from "@/lib/whatsapp";
+import { track } from "@/lib/tracking";
 import { formatMiles, formatPrecio, parseMiles } from "@/lib/format";
 
 const PRESUPUESTO_MIN = 5_000_000;
@@ -182,6 +183,7 @@ export function BusquedaAMedida({
       auto_slug: autoSlug?.slice(0, 200) ?? null,
     });
     if (error) console.error("busquedas_web insert", error.message);
+    else track("lead_form", { nombre: "busqueda_a_medida", slug: autoSlug });
 
     // Salga bien o mal el insert, el pedido llega igual por WhatsApp.
     const link = linkWhatsapp(construirMensaje(datos, autoTitulo));
